@@ -5,17 +5,33 @@ import { useEffect, useMemo, useState } from "react";
 import { ExamCalendarGrid } from "@/components/calendar/exam-calendar-grid";
 import { CountdownCard } from "@/components/exams/countdown-card";
 import { OverviewCard } from "@/components/exams/overview-card";
-import { getExamDateTime, isUpcomingExam } from "@/lib/data/exams";
-import { ExamRecord } from "@/lib/types/exams";
+import { Card, CardContent } from "@/components/ui/card";
+import { CourseScheduleDTO, LevelKey } from "@/lib/domain/exams";
+import {
+  compareSittings,
+  getSittingDateTime,
+  isSittingUpcoming
+} from "@/lib/utils/dates";
 
 type HomeDashboardProps = {
-  exams: ExamRecord[];
+  exams: CourseScheduleDTO[];
+  levelKey: LevelKey;
+  calendarTitle: string;
 };
 
-export function HomeDashboard({ exams }: HomeDashboardProps) {
-  const [currentTime, setCurrentTime] = useState(() =>
-    exams[0] ? getExamDateTime(exams[0]).getTime() : 0
+export function HomeDashboard({
+  exams,
+  levelKey,
+  calendarTitle
+}: HomeDashboardProps) {
+  const scheduledExams = useMemo(
+    () => exams.filter((exam) => exam.sittings.length > 0),
+    [exams]
   );
+  const [currentTime, setCurrentTime] = useState(() => {
+    const firstSitting = scheduledExams[0]?.sittings[0];
+    return firstSitting ? getSittingDateTime(firstSitting).getTime() : 0;
+  });
 
   useEffect(() => {
     const syncClock = () => {
@@ -31,21 +47,29 @@ export function HomeDashboard({ exams }: HomeDashboardProps) {
     };
   }, []);
 
-  const totalCourses = useMemo(
-    () => new Set(exams.map((exam) => exam.courseCode)).size,
-    [exams]
-  );
+  const totalCourses = exams.length;
 
-  const upcomingExams = useMemo(() => {
+  const upcomingSittings = useMemo(() => {
     const referenceDate = new Date(currentTime);
-    return exams.filter((exam) => isUpcomingExam(exam, referenceDate));
-  }, [currentTime, exams]);
+    return scheduledExams
+      .flatMap((schedule) =>
+        schedule.sittings.map((sitting) => ({ schedule, sitting }))
+      )
+      .filter(({ sitting }) => isSittingUpcoming(sitting, referenceDate))
+      .sort((left, right) => compareSittings(left.sitting, right.sitting));
+  }, [currentTime, scheduledExams]);
 
-  const nextExam = upcomingExams[0] ?? null;
-  const examsLeft = upcomingExams.length;
+  const examsLeft = useMemo(() => {
+    const referenceDate = new Date(currentTime);
+    return scheduledExams.filter((schedule) =>
+      schedule.sittings.some((sitting) => isSittingUpcoming(sitting, referenceDate))
+    ).length;
+  }, [currentTime, scheduledExams]);
+
+  const nextExam = upcomingSittings[0] ?? null;
 
   const millisecondsRemaining = nextExam
-    ? Math.max(getExamDateTime(nextExam).getTime() - currentTime, 0)
+    ? Math.max(getSittingDateTime(nextExam.sitting).getTime() - currentTime, 0)
     : 0;
 
   if (!exams.length) {
@@ -55,11 +79,28 @@ export function HomeDashboard({ exams }: HomeDashboardProps) {
   return (
     <div className="space-y-3.5 sm:space-y-4">
       <section className="grid gap-2.5 lg:grid-cols-[minmax(0,1fr)_18.5rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_19rem]">
-        <OverviewCard totalCourses={totalCourses} examsLeft={examsLeft} nextExam={nextExam} />
+        <OverviewCard
+          totalCourses={totalCourses}
+          examsLeft={examsLeft}
+          nextExam={nextExam}
+        />
         <CountdownCard nextExam={nextExam} millisecondsRemaining={millisecondsRemaining} />
       </section>
 
-      <ExamCalendarGrid exams={exams} currentTime={currentTime} />
+      {scheduledExams.length ? (
+        <ExamCalendarGrid
+          exams={scheduledExams}
+          currentTime={currentTime}
+          levelKey={levelKey}
+          title={calendarTitle}
+        />
+      ) : (
+        <Card>
+          <CardContent className="p-4 text-sm text-muted-foreground sm:p-5">
+            No confirmed exam dates are available for this semester yet.
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

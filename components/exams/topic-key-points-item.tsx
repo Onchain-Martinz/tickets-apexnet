@@ -5,9 +5,9 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { TopicKeyPoints } from "@/lib/types/exams";
+import { OutlineTopicDTO } from "@/lib/domain/exams";
 
-export function TopicKeyPointsItem({ item }: { item: TopicKeyPoints }) {
+export function TopicKeyPointsItem({ item }: { item: OutlineTopicDTO }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -16,7 +16,7 @@ export function TopicKeyPointsItem({ item }: { item: TopicKeyPoints }) {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <h3 className="max-w-3xl text-sm font-semibold leading-6 tracking-[-0.01em] text-foreground">
-              {item.topic}
+              {item.text}
             </h3>
           </div>
 
@@ -45,9 +45,9 @@ export function TopicKeyPointsItem({ item }: { item: TopicKeyPoints }) {
                   Key Points
                 </p>
                 <ul className="mt-2 space-y-2 pl-4 text-sm leading-6 text-foreground marker:text-muted-foreground">
-                  {item.points.map((point) => (
-                    <li key={point} className="break-words">
-                      {point}
+                  {item.keyPoints.map((point) => (
+                    <li key={point.id} className="break-words">
+                      {point.text}
                     </li>
                   ))}
                 </ul>

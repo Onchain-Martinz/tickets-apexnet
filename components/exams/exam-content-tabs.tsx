@@ -6,9 +6,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { PastQuestionsPanel } from "@/components/exams/past-questions-panel";
 import { TopicsPanel } from "@/components/exams/topics-panel";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ExamRecord } from "@/lib/types/exams";
+import { CourseDetailDTO } from "@/lib/domain/exams";
 
-export function ExamContentTabs({ exam }: { exam: ExamRecord }) {
+export function ExamContentTabs({ exam }: { exam: CourseDetailDTO }) {
   const [tab, setTab] = useState("past-questions");
 
   return (
@@ -51,9 +51,9 @@ export function ExamContentTabs({ exam }: { exam: ExamRecord }) {
           className="mt-4 sm:mt-5"
         >
           {tab === "past-questions" ? (
-            <PastQuestionsPanel exam={exam} />
+            <PastQuestionsPanel questionSet={exam.questionSet} />
           ) : (
-            <TopicsPanel exam={exam} />
+            <TopicsPanel outline={exam.outline} />
           )}
         </motion.div>
       </AnimatePresence>

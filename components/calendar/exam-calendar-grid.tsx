@@ -4,41 +4,55 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { isCompletedExam } from "@/lib/data/exams";
-import { ExamRecord } from "@/lib/types/exams";
+import { CourseScheduleDTO, LevelKey } from "@/lib/domain/exams";
+import { isSittingCompleted } from "@/lib/utils/dates";
 
 type ExamCalendarGridProps = {
-  exams: ExamRecord[];
+  exams: CourseScheduleDTO[];
   currentTime: number;
+  levelKey: LevelKey;
+  title: string;
 };
 
 type CalendarDay = {
   key: string;
-  dayNumber: string;
-  exams: ExamRecord[];
+  dayLabel: string;
+  exams: CourseScheduleDTO[];
 };
 
-export function ExamCalendarGrid({ exams, currentTime }: ExamCalendarGridProps) {
-  const examMap = exams.reduce<Map<string, ExamRecord[]>>((acc, exam) => {
-    const items = acc.get(exam.date) ?? [];
+export function ExamCalendarGrid({ exams, currentTime, levelKey, title }: ExamCalendarGridProps) {
+  const scheduledExams = exams.filter((exam) => exam.sittings.length > 0);
+  const examMap = scheduledExams.reduce<Map<string, CourseScheduleDTO[]>>((acc, exam) => {
+    const primaryDate = exam.sittings[0].date;
+    const items = acc.get(primaryDate) ?? [];
     items.push(exam);
-    acc.set(exam.date, items);
+    acc.set(primaryDate, items);
     return acc;
   }, new Map());
-
-  const firstExamDate = parseDate(exams[0]?.date ?? formatDate(new Date()));
-  const finalExamDate = parseDate(exams.at(-1)?.date ?? exams[0]?.date ?? formatDate(new Date()));
-  const days = buildCalendarDays(firstExamDate, finalExamDate, examMap);
+  const secondaryDates = new Set(
+    scheduledExams.flatMap((exam) => exam.sittings.slice(1).map((sitting) => sitting.date))
+  );
+  const allDates = scheduledExams.flatMap((exam) =>
+    exam.sittings.map((sitting) => sitting.date)
+  ).sort();
+  const firstExamDate = parseDate(allDates[0] ?? formatDate(new Date()));
+  const finalExamDate = parseDate(allDates.at(-1) ?? allDates[0] ?? formatDate(new Date()));
+  const days = buildCalendarDays(firstExamDate, finalExamDate, examMap, secondaryDates);
 
   return (
     <Card>
       <CardHeader className="space-y-0.5">
-        <CardTitle className="text-[15px] sm:text-base">Exam calendar</CardTitle>
+        <CardTitle className="text-[15px] sm:text-base">{title}</CardTitle>
       </CardHeader>
       <CardContent className="pt-0.5">
         <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-8 xl:grid-cols-10">
           {days.map((day) => (
-            <CalendarBox key={day.key} day={day} currentTime={currentTime} />
+            <CalendarBox
+              key={day.key}
+              day={day}
+              currentTime={currentTime}
+              levelKey={levelKey}
+            />
           ))}
         </div>
       </CardContent>
@@ -46,12 +60,20 @@ export function ExamCalendarGrid({ exams, currentTime }: ExamCalendarGridProps) 
   );
 }
 
-function CalendarBox({ day, currentTime }: { day: CalendarDay; currentTime: number }) {
+function CalendarBox({
+  day,
+  currentTime,
+  levelKey
+}: {
+  day: CalendarDay;
+  currentTime: number;
+  levelKey: LevelKey;
+}) {
   const isExamDay = day.exams.length > 0;
   const referenceDate = new Date(currentTime);
-  const completedExamCount = day.exams.filter((exam) => isCompletedExam(exam, referenceDate)).length;
-  const hasCompletedExams = completedExamCount > 0;
-  const hasUpcomingExams = completedExamCount < day.exams.length;
+  const statuses = day.exams.map((exam) => getScheduleStatus(exam, referenceDate));
+  const hasCompletedExams = statuses.some((status) => status !== "upcoming");
+  const hasUpcomingExams = statuses.some((status) => status !== "completed");
   const dayStatus = !isExamDay
     ? "empty"
     : hasUpcomingExams
@@ -76,7 +98,7 @@ function CalendarBox({ day, currentTime }: { day: CalendarDay; currentTime: numb
     <>
       <span
         className={[
-          "font-mono text-[13px] font-semibold leading-none tabular-nums sm:text-[15px]",
+          "whitespace-nowrap font-mono text-[13px] font-semibold leading-none tabular-nums sm:text-[15px]",
           dayStatus === "upcoming"
             ? "text-[rgb(var(--exam-day-foreground))]"
             : dayStatus === "completed"
@@ -84,27 +106,31 @@ function CalendarBox({ day, currentTime }: { day: CalendarDay; currentTime: numb
               : "text-foreground"
         ].join(" ")}
       >
-        {day.dayNumber}
+        {day.dayLabel}
       </span>
 
       <div className="mt-1 space-y-0.5 overflow-hidden">
-        {day.exams.map((exam) => (
-          <span
-            key={exam.slug}
-            className={[
-              "block text-[8.5px] font-medium uppercase leading-[1.15] tracking-[0.03em] sm:text-[9.5px]",
-              isCompletedExam(exam, referenceDate)
-                ? dayStatus === "upcoming"
-                  ? "line-through opacity-65"
-                  : "line-through text-muted-foreground/90"
-                : dayStatus === "upcoming"
-                  ? "text-[rgb(var(--exam-day-foreground))]"
-                  : "text-muted-foreground"
-            ].join(" ")}
-          >
-            {compactCourseCode(exam.courseCode)}
-          </span>
-        ))}
+        {day.exams.map((exam) => {
+          const examStatus = getScheduleStatus(exam, referenceDate);
+
+          return (
+            <span
+              key={exam.id}
+              className={[
+                "block text-[8.5px] font-medium uppercase leading-[1.15] tracking-[0.03em] sm:text-[9.5px]",
+                examStatus === "completed"
+                  ? dayStatus === "upcoming"
+                    ? "line-through opacity-65"
+                    : "line-through text-muted-foreground/90"
+                  : dayStatus === "upcoming"
+                    ? "text-[rgb(var(--exam-day-foreground))]"
+                    : "text-muted-foreground"
+              ].join(" ")}
+            >
+              {compactCourseCode(exam.courseCode)}
+            </span>
+          );
+        })}
       </div>
 
       {isExamDay && hasCompletedExams ? (
@@ -128,7 +154,7 @@ function CalendarBox({ day, currentTime }: { day: CalendarDay; currentTime: numb
 
   return (
     <Link
-      href={`/date/${day.key}`}
+      href={`/date/${day.key}?level=${levelKey}`}
       className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
     >
       <motion.div
@@ -143,25 +169,53 @@ function CalendarBox({ day, currentTime }: { day: CalendarDay; currentTime: numb
   );
 }
 
+function getScheduleStatus(exam: CourseScheduleDTO, referenceDate: Date) {
+  const completedSittings = exam.sittings.filter((sitting) =>
+    isSittingCompleted(sitting, referenceDate)
+  ).length;
+
+  if (completedSittings === 0) return "upcoming";
+  if (completedSittings === exam.sittings.length) return "completed";
+  return "mixed";
+}
+
 function buildCalendarDays(
   startDate: Date,
   endDate: Date,
-  examMap: Map<string, ExamRecord[]>
+  examMap: Map<string, CourseScheduleDTO[]>,
+  secondaryDates: Set<string>
 ) {
   const days: CalendarDay[] = [];
   const cursor = new Date(startDate);
 
   while (cursor.getTime() <= endDate.getTime()) {
     const key = formatDate(cursor);
-    days.push({
-      key,
-      dayNumber: String(cursor.getDate()),
-      exams: examMap.get(key) ?? []
-    });
+    const exams = examMap.get(key) ?? [];
+
+    if (!secondaryDates.has(key) || exams.length) {
+      days.push({
+        key,
+        dayLabel: getDayLabel(key, exams),
+        exams
+      });
+    }
+
     cursor.setDate(cursor.getDate() + 1);
   }
 
   return days;
+}
+
+function getDayLabel(date: string, exams: CourseScheduleDTO[]) {
+  const dates = [
+    date,
+    ...exams.flatMap((exam) => exam.sittings.slice(1).map((sitting) => sitting.date))
+  ];
+
+  return [...new Set(dates)]
+    .sort()
+    .map((item) => String(parseDate(item).getDate()))
+    .join(" & ");
 }
 
 function parseDate(date: string) {

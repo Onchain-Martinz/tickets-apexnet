@@ -5,9 +5,16 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { AnswerReveal } from "@/lib/types/exams";
+import { AnswerDTO } from "@/lib/domain/exams";
 
-export function QuestionRevealCard({ item }: { item: AnswerReveal }) {
+type QuestionRevealItem = {
+  id: string;
+  number: string;
+  text: string;
+  answer: AnswerDTO;
+};
+
+export function QuestionRevealCard({ item }: { item: QuestionRevealItem }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -16,10 +23,10 @@ export function QuestionRevealCard({ item }: { item: AnswerReveal }) {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0 space-y-1.5">
             <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              Question {item.questionNumber}
+              Question {item.number}
             </p>
             <pre className="max-w-3xl whitespace-pre-wrap break-words font-sans text-sm leading-6 text-foreground">
-              {item.question}
+              {item.text}
             </pre>
           </div>
 
@@ -48,7 +55,7 @@ export function QuestionRevealCard({ item }: { item: AnswerReveal }) {
                   Answer
                 </p>
                 <pre className="mt-2 max-w-3xl whitespace-pre-wrap break-words font-sans text-sm leading-6 text-foreground">
-                  {item.answer}
+                  {item.answer.text}
                 </pre>
               </div>
             </motion.div>

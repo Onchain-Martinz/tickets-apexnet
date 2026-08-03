@@ -1,11 +1,28 @@
+import Link from "next/link";
+import type { Route } from "next";
+
 import { HomeDashboard } from "@/components/exams/home-dashboard";
 import { PageShell } from "@/components/layout/page-shell";
 import { PageReveal } from "@/components/layout/page-reveal";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { getAllExams } from "@/lib/data/exams";
+import {
+  defaultLevelKey,
+  isLevelKey,
+  levelOptions
+} from "@/lib/domain/exams";
+import { listExamsByLevel } from "@/lib/repositories/exams";
 
-export default function HomePage() {
-  const exams = getAllExams();
+type HomePageProps = {
+  searchParams: Promise<{
+    level?: string;
+  }>;
+};
+
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const { level } = await searchParams;
+  const selectedLevelKey = isLevelKey(level) ? level : defaultLevelKey;
+  const selectedLevel = levelOptions.find((option) => option.key === selectedLevelKey)!;
+  const exams = await listExamsByLevel(selectedLevelKey);
 
   return (
     <PageShell>
@@ -26,8 +43,42 @@ export default function HomePage() {
           </header>
         </PageReveal>
 
+        <PageReveal delay={0.03}>
+          <nav
+            aria-label="Level selection"
+            className="grid grid-cols-2 gap-1 rounded-[1rem] border border-border bg-secondary p-1 sm:inline-grid"
+          >
+            {levelOptions.map((option) => {
+              const active = option.key === selectedLevelKey;
+              const href = (option.key === defaultLevelKey
+                ? "/"
+                : `/?level=${option.key}`) as Route;
+
+              return (
+                <Link
+                  key={option.key}
+                  href={href}
+                  aria-current={active ? "page" : undefined}
+                  className={[
+                    "inline-flex min-h-10 items-center justify-center rounded-[0.8rem] px-3 py-2 text-center text-[12px] font-medium transition-colors sm:text-[13px]",
+                    active
+                      ? "bg-card text-foreground shadow-card"
+                      : "text-muted-foreground hover:text-foreground"
+                  ].join(" ")}
+                >
+                  {option.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </PageReveal>
+
         <PageReveal delay={0.05}>
-          <HomeDashboard exams={exams} />
+          <HomeDashboard
+            exams={exams}
+            levelKey={selectedLevelKey}
+            calendarTitle={`${selectedLevel.label} EXAM CALENDAR`}
+          />
         </PageReveal>
       </div>
     </PageShell>

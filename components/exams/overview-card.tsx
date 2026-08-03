@@ -1,20 +1,24 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ExamRecord } from "@/lib/types/exams";
+import { UpcomingExamDTO } from "@/lib/domain/exams";
 
 type OverviewCardProps = {
   totalCourses: number;
   examsLeft: number;
-  nextExam: ExamRecord | null;
+  nextExam: UpcomingExamDTO | null;
 };
 
-export function OverviewCard({ totalCourses, examsLeft, nextExam }: OverviewCardProps) {
+export function OverviewCard({
+  totalCourses,
+  examsLeft,
+  nextExam
+}: OverviewCardProps) {
   const items = [
     { label: "Total courses", value: String(totalCourses) },
     { label: "Exams left", value: String(examsLeft) },
     {
       label: "Upcoming exam",
-      value: nextExam?.courseCode ?? "All exams done",
-      note: nextExam?.courseTitle ?? "No upcoming exams"
+      value: nextExam?.schedule.courseCode ?? "All exams done",
+      note: nextExam?.schedule.courseTitle ?? "No upcoming exams"
     }
   ];
 

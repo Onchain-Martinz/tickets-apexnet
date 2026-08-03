@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ExamRecord } from "@/lib/types/exams";
+import { UpcomingExamDTO } from "@/lib/domain/exams";
 
 type CountdownCardProps = {
-  nextExam: ExamRecord | null;
+  nextExam: UpcomingExamDTO | null;
   millisecondsRemaining: number;
 };
 
@@ -16,7 +16,9 @@ export function CountdownCard({ nextExam, millisecondsRemaining }: CountdownCard
   const formatted = [days, hours, minutes, seconds]
     .map((value) => String(value).padStart(2, "0"))
     .join(" : ");
-  const countdownKey = nextExam ? `${nextExam.slug}:${formatted}` : "completed";
+  const countdownKey = nextExam
+    ? `${nextExam.sitting.id}:${formatted}`
+    : "completed";
 
   return (
     <Card>
@@ -24,7 +26,7 @@ export function CountdownCard({ nextExam, millisecondsRemaining }: CountdownCard
         <div className="flex items-center justify-between gap-3">
           <CardTitle className="text-[15px]">Countdown</CardTitle>
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-            {nextExam?.courseCode ?? "Completed"}
+            {nextExam?.schedule.courseCode ?? "Completed"}
           </p>
         </div>
       </CardHeader>
@@ -37,7 +39,7 @@ export function CountdownCard({ nextExam, millisecondsRemaining }: CountdownCard
                 initial={{ opacity: 0.68, y: 2 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.16, ease: "easeOut" }}
-                className="whitespace-nowrap font-mono text-[0.98rem] font-semibold leading-none tracking-[0.08em] text-timer-foreground sm:text-[1.08rem] lg:text-[1rem] xl:text-[1.08rem] dark:[text-shadow:0_0_18px_rgba(139,92,246,0.16)]"
+                className="whitespace-nowrap font-mono text-[clamp(0.82rem,4.3vw,0.98rem)] font-semibold leading-none tracking-[0.05em] text-timer-foreground sm:text-[1.08rem] sm:tracking-[0.08em] lg:text-[1rem] xl:text-[1.08rem] dark:[text-shadow:0_0_18px_rgba(139,92,246,0.16)]"
               >
                 {formatted}
               </motion.p>

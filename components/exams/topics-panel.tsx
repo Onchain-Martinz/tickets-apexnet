@@ -1,11 +1,11 @@
 import { TopicKeyPointsItem } from "@/components/exams/topic-key-points-item";
 import { Card, CardContent } from "@/components/ui/card";
-import { ExamRecord } from "@/lib/types/exams";
+import { OutlineDTO } from "@/lib/domain/exams";
 
-export function TopicsPanel({ exam }: { exam: ExamRecord }) {
-  const hasTopicKeyPoints = Boolean(exam.topicKeyPoints?.length);
+export function TopicsPanel({ outline }: { outline: OutlineDTO }) {
+  const hasTopicKeyPoints = outline.topics.some((topic) => topic.keyPoints.length > 0);
 
-  if (!exam.topicsToRead.length && !hasTopicKeyPoints) {
+  if (!outline.topics.length) {
     return (
       <Card>
         <CardContent className="p-4 sm:p-5">
@@ -20,8 +20,8 @@ export function TopicsPanel({ exam }: { exam: ExamRecord }) {
   if (hasTopicKeyPoints) {
     return (
       <div className="space-y-2.5 sm:space-y-3">
-        {exam.topicKeyPoints?.map((item) => (
-          <TopicKeyPointsItem key={`${exam.slug}-${item.topic}`} item={item} />
+        {outline.topics.map((item) => (
+          <TopicKeyPointsItem key={item.id} item={item} />
         ))}
       </div>
     );
@@ -31,12 +31,12 @@ export function TopicsPanel({ exam }: { exam: ExamRecord }) {
     <Card>
       <CardContent className="p-4 sm:p-5">
         <div className="space-y-4">
-          {exam.topicsToRead.map((topic) => (
+          {outline.topics.map((topic) => (
             <pre
-              key={topic}
+              key={topic.id}
               className="max-w-3xl whitespace-pre-wrap break-words font-sans text-sm leading-6 text-foreground"
             >
-              {topic}
+              {topic.text}
             </pre>
           ))}
         </div>

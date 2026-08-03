@@ -1,4 +1,4 @@
-import { ExamRecord } from "@/lib/types/exams";
+import { ExamRecord, QuestionSupportingData, ScheduledExamRecord } from "@/lib/types/exams";
 
 const topicsByCourse: Record<string, string[]> = {
   "PSY 105": [`ETHICS IN PSYCHOLOGY 
@@ -144,7 +144,12 @@ const topicsByCourse: Record<string, string[]> = {
 * Treatment approaches to anxiety`]
 };
 
-export const examRecords: ExamRecord[] = [
+type ArchivedExamSource = Omit<
+  ExamRecord,
+  "session" | "semester" | "level" | "status" | "examVenue"
+>;
+
+const archivedFirstSemesterSource: ArchivedExamSource[] = [
   {
     slug: "psy-103",
     courseCode: "PSY 103",
@@ -1088,29 +1093,1038 @@ export const examRecords: ExamRecord[] = [
   }
 ];
 
+export const levelOptions = [
+  {
+    key: "100-level",
+    label: "100 LEVEL",
+    level: "100 Level"
+  },
+  {
+    key: "200-level",
+    label: "200 LEVEL",
+    level: "200 Level"
+  }
+] as const;
+
+export type LevelKey = (typeof levelOptions)[number]["key"];
+
+export const defaultLevelKey: LevelKey = "100-level";
+
+const archivedFirstSemesterRecords: ExamRecord[] = archivedFirstSemesterSource.map((exam) => ({
+  ...exam,
+  session: "2025/2026",
+  semester: "First Semester",
+  level: "100 Level",
+  status: "archived",
+  examVenue: null
+}));
+
+const secondSemesterTopicsByCourse: Record<string, string[]> = {
+  "CSD 102": [
+    "1. Foundation and Origin of Career Services",
+    "2. Self-Confidence and Career Development",
+    "3. Independence and Responsibility: Lessons for Freshers",
+    "4. Early Career Planning",
+    "5. Time Management and Productivity: A Student's Perspective",
+    "6. Personal Branding and Self-Assessment",
+    "7. Interest Inventory",
+    "8. Career Assessment and Administration",
+    "9. Cultural Factors Influencing Career Choices in Nigeria",
+    "10. Professional Ethics in Career Development",
+    "11. Leadership and Mentorship Skills for Students",
+    "12. Technical and Computer Skills for Career Success",
+    "13. Decision Making for Freshers"
+  ],
+  "PSY 104": [
+    `Module 1: Introduction to Statistics
+
+• Meaning and Nature of Statistics
+• Sources of Statistical Data in Nigeria
+• Role of Statistics
+• Uses and Limitations of Statistics
+• Population and Sample
+• Surveys and Experiments`,
+    `Module 2: Descriptive Statistics
+
+• Frequency Distribution
+• Mean
+• Median
+• Mode
+• Range
+• Summarizing Characteristics of Populations and Samples`,
+    `Module 3: Measures of Central Tendency and Variability
+
+• Computing and Interpreting Measures of Central Tendency
+• Variance
+• Standard Deviation`,
+    `Module 4: Levels of Measurement
+
+• Nominal Scale
+• Ordinal Scale
+• Interval Scale
+• Ratio Scale
+• Selecting Appropriate Statistics for Each Level`,
+    `Module 5: Inferential Statistics
+
+• Estimation from Samples
+• Statistical Parameters
+• Population Inference`,
+    `Module 6: Hypothesis Testing
+
+• Null Hypothesis
+• Alternative Hypothesis
+• Parametric Tests
+• Non-Parametric Tests`,
+    `Module 7: Tests of Association
+
+• Chi-Square Test
+• Tests for Nominal and Ordinal Data
+• Measures of Association`,
+    `Module 8: Correlation Analysis
+
+• Pearson Product-Moment Correlation
+• Spearman Rank-Order Correlation`,
+    `Module 9: Analysis of Variance
+
+• One-Way ANOVA
+• Introduction to Factor Analysis`
+  ],
+  "HIS 104": [
+    "1. History of Science: An Overview",
+    "2. Philosophy of Science: An Overview",
+    "3. Scientific Methodology",
+    "4. Man as the Centre of Science: His Origin",
+    "5. Origin of Life: A Biochemical Perspective",
+    "6. Continuity of Life",
+    "7. Science in the Service of Man",
+    "8. Man and His Cosmic Environment",
+    "9. Implications of Technological Advances on Human Welfare",
+    "10. Biodiversity and the Impact of Deforestation in Nigeria",
+    "11. Impact of Oil Exploration in Nigeria"
+  ],
+  "PSY 118": [
+    "1. Approaches to the Formation of Political Beliefs",
+    "2. Political Attitudes and Behaviour",
+    "3. Theories of Political Attitudes",
+    "4. Social Perception in Politics",
+    "5. Political Personality",
+    "6. Political Alienation and Anomia",
+    "7. Political Leadership and Authoritarianism",
+    "8. Political Conflict, Aggression, Violence, Revolution and War",
+    "9. Elections and Electoral Practices",
+    "10. African Regional Politics and International Relations"
+  ],
+  "PSY 122": [
+    "1. Meaning of Determinants of Behaviour",
+    "2. Physical, Social, Environmental, Cultural and Biological Determinants of Behaviour",
+    "3. Biological Basis of Behaviour",
+    "4. Neurons, Brain and the Endocrine System",
+    "5. Behaviour",
+    "6. Intelligence",
+    "7. Perception",
+    "8. Emotion"
+  ],
+  "ELS 102": [
+    "1. Developing Effective Writing Skills",
+    "2. Grammar, Word Classes, Concord and Punctuation",
+    "3. Sentence Construction Techniques",
+    "4. Paragraph Development",
+    "5. Essay Writing Techniques",
+    "6. Academic Writing",
+    "7. Creative Writing",
+    "8. Professional and Technical Writing",
+    "9. Writing Style and Language Use",
+    "10. Editing and Proofreading",
+    "11. Writing for Digital and Media Platforms",
+    "12. Advanced Writing Strategies",
+    "13. Writing Practice and Skill Development",
+    "14. Common Writing Problems and Their Solutions",
+    "15. Writing Effective Conclusions",
+    "16. Poetry Writing in Modern Times",
+    "17. Curriculum Vitae (CV) and Résumé Writing",
+    "18. Writing for Specific Purposes"
+  ],
+  "IGBO 107": [
+    "1. Ndubata (Introduction)",
+    "2. Edemede – Akụkọ",
+    "3. Atụmatụ Okwu (Figures of Speech)",
+    "4. Agụmagụ (Literature)",
+    "5. Ntughari na Ọkwọwaokwu (Translation and Dictionary)",
+    "6. Edemede Okwu Nka na Okwu Ọhụrụ",
+    "7. Edemede Omụma Igbo",
+    "8. Okwu Nọha"
+  ],
+  "PSY 116": [
+    "1. Understanding the Concept of Psychology",
+    "2. Philosophical Influences on Psychology",
+    "3. Physiological Influences on Psychology",
+    "4. Beginning of Experimental Psychology",
+    "5. Contributions of Women to Modern Psychology",
+    "6. Structuralism and Functionalism",
+    "7. Psychoanalysis and Behaviourism",
+    "8. Cognitivism, Humanism and Gestalt Psychology",
+    "9. Major Theories of Psychology",
+    "10. Ethical Issues in the Practice of Psychology",
+    "11. African Philosophy and Psychology",
+    "12. Psychology and Religion",
+    "13. Professional Bodies of Psychologists in Nigeria",
+    "14. Challenges Facing the Practice of Psychology in Nigeria"
+  ],
+  "NPC 112": [
+    "1. Exploring Nigeria's Past: Ethnic Groups",
+    "2. Impact and Legacy of Colonialism in Nigeria",
+    "3. The Making of Modern Nigeria",
+    "4. Nigeria After Independence: Challenges of Nation Building",
+    "5. Economic Independence and Self-Sufficiency",
+    "6. Nigeria's Contemporary Landscape",
+    "7. Social Justice in Nigeria",
+    "8. Citizenship: Rights, Responsibilities and Duties",
+    "9. Human Rights in Nigeria",
+    "10. Nigerian Culture: Core Norms and Values",
+    "11. Nigeria's Future: Moral Reorientation"
+  ],
+  "PSY 102": [
+    `Module 1: Introduction
+
+• Scope of Military Psychology
+• Nature of Military Operations
+• Current Contributions of Psychology to Military Operations`,
+    `Module 2: Leadership and Military Indoctrination
+
+• Military Leadership Philosophy
+• Obedience and Compliance
+• Principles of Military Obedience
+• Theories of Military Leadership
+• Personality of Military Leaders
+• Military Indoctrination
+• Stages of Indoctrination
+• Mechanisms of Indoctrination`,
+    `Module 3: Personnel Selection
+
+• Selection Techniques
+• Selection Process
+• Personnel Selection Tools`,
+    `Module 4: Combat Stress and PTSD
+
+• Types of Combat Stress
+• Sources of Stress
+• Symptoms of Military Stress
+• Protective Factors
+• PTSD
+• Symptoms and Diagnosis
+• Treatment`,
+    `Module 5: Drug Use in the Military
+
+• Common Drugs
+• Causes of Drug Use
+• Treatment Principles
+• Treatment Approaches
+• Withdrawal Syndrome`,
+    `Module 6: Attention and Vigilance
+
+• Sustained Attention
+• Neurophysiology of Attention
+• Inattention
+• Functions of Attention
+• Vigilance
+• Principles of Vigilance Behaviour
+• Psychological Variables Influencing Vigilance
+• Measurement of Vigilance
+• Psychological Resilience`,
+    `Module 7: Psychological Assessment
+
+• Military Selection Process
+• Psychological Assessment Tools
+• Placement, Training and Promotion
+• Applications of Psychological Testing
+• Challenges of Military Assessment`,
+    `Module 8: Military Intelligence
+
+• Characteristics of Military Intelligence
+• Benefits of Military Intelligence
+• Types of Intelligence
+• Intelligence Process
+• Levels of Intelligence
+• Intelligence Analysis
+• Knowledge Required for Intelligence Analysis`,
+    `Module 9: Crime Investigation
+
+• Traits of an Investigator
+• Principles of Crime Investigation
+• Military Investigation Process
+• Behavioural Traits in Investigation Management
+• Steps in Crime Prosecution
+• Investigative Interviewing
+• Leading Interview Questions`,
+    `Module 10: Insurgency and Terrorism
+
+• Terrorism
+• Causes of Insurgency and Terrorism
+• Strategies for Prevention and Control`
+  ],
+  "ICT 102": [
+    `Theory
+
+1. Introduction`,
+    "2. Computer Hardware",
+    "3. Computer Software and Operating Systems",
+    "4. Computer Viruses",
+    "5. Meaning and Origin of Libraries",
+    "6. Types of Libraries",
+    "7. Library Resources and Services",
+    "8. Library Rules and Regulations",
+    `Practical
+
+1. Introduction to Computer Technology`,
+    "2. Types of Computers",
+    "3. Operating System Applications",
+    "4. Windows Operating System",
+    "5. Networking",
+    "6. Application Software",
+    "7. Career Opportunities in ICT",
+    "8. Computer Education"
+  ]
+};
+
+const secondSemesterPastQuestionsByCourse: Record<
+  string,
+  NonNullable<ExamRecord["pastQuestions"]>
+> = {
+  "PSY 102": {
+    instruction:
+      "2024/2025 Second Semester Examination\n\nInstruction: Answer any four (4) questions",
+    items: [
+      "1. Discuss five (5) values of police and military leadership.",
+      "2. Explain three (3) basic attributes of police and military leaders.",
+      "3. Explain four (4) effects of drug use and abuse in police and military.",
+      "4. Discuss four (4) principles of vigilance behaviour in police and military.",
+      "5. List and explain four (4) coping methods in treating withdrawal syndrome.",
+      "6. Discuss four (4) principles of criminal investigation."
+    ]
+  },
+  "PSY 116": {
+    instruction:
+      "2024/2025 Second Semester Examination\n\nInstruction: Answer Question 1 and any other three questions.",
+    items: [
+      "1. With three (3) points, explain why it is important for a trainee Psychologist to study the History and Systems of Psychology.",
+      "2. Discuss extensively three (3) major contributions of Wilhelm Wundt to the development of Modern Psychology.",
+      "3. Scientific study of Psychology emerged as a discipline from Philosophy and Physiology. Discuss in one page at least.",
+      "4. Discuss extensively three (3) major contributions of Abraham Maslow to the development of Modern Psychology.",
+      "5. Write short notes (at least half a page each) on the following schools of thought in Psychology:\n(a) Functionalism\n(b) Behaviourism",
+      "6.\n(a) What do you think are three (3) major challenges facing the practice of Psychology in Nigeria?\n\n(b) What are the possible solutions to the identified challenges?"
+    ]
+  },
+  "PSY 118": {
+    instruction:
+      "2024/2025 Second Semester Examination\n\nInstruction: Answer four (4) questions only",
+    items: [
+      "1. Several sources of power in specialized settings have been delineated by scientists. As a psychologist, discuss five sources of power known to you.",
+      "2. Enumerate five strategies for pre-election rigging pattern in your country.",
+      "3. The formation of relevant political attitudes is often determined by several factors. Discuss.",
+      "4. Identify five rationales behind rigging of elections in your country.",
+      "5. As a political psychologist cum electoral chair in your country, proffer five (5) viable panaceas to election rigging in your nation.",
+      "6. There are basically two dimensions of authority and power in administration and governance. Identify and discuss them.\n\n(b) Discuss the following terms:\n(i) Connection Power\n(ii) Information Power\n(iii) Socialization"
+    ]
+  },
+  "PSY 122": {
+    instruction:
+      "2024/2025 Second Semester Examination\n\nInstruction: Attempt any four (4) questions.",
+    items: [
+      "1. Behaviour involves responses to stimuli by an individual, species or group (Eyo, 2003). Discuss.",
+      "2. Discuss two (2) methods of studying Human heredity.",
+      "3. Learning is normally defined as the process by which relatively permanent changes in behaviour are brought about through experience and practice (Eyo, 2003). Discuss.",
+      "4. Discuss two (2) major factors affecting attention in the determinants of behaviour.",
+      "5. Explain three (3) socio-cultural environmental factors that can determine pathological behaviours.",
+      "6. Write notes on the following:\n(a) Neurosis\n(b) Psychosis\n(c) Depressants\n(d) Stimulants\n(e) Bodily/Physical Health Conditions"
+    ]
+  },
+  "PSY 104": {
+    instruction:
+      "2024/2025 Second Semester Examination\n\nInstructions:\nAnswer Question 1 and any other three (3) questions.\n\nDo not write anything on the question paper except your matriculation number and name.\n\nAll rough calculations must be done on the back pages of your answer sheets.",
+    items: [
+      "1.\n(a) What is a variable? (4 marks)\n(b) List three types of variables. (3 marks)\n(c) How can temperature be classified as a variable? (3 marks)\n(d) What is a hypothesis? (5 marks)\n(e) What are the types of hypotheses? (3 marks)\n(f) What is a critical value? (2 marks)\n(g) Differentiate between a monotonic relationship and a linear relationship. (5 marks)",
+      "2. Chioma and Ezinne were asked to rank their favourite eateries in Owerri from a list of 10 eateries.\n\nTheir rankings are presented in Table 1 below.\n\nTable 1: Raw Scores of Two Students' Preference of 10 Eateries in Owerri.\n\n(a) Calculate the relationship of their preferences using the Spearman Rank Order Correlation (rₛ). (15 marks)\n\n(b) Briefly explain the result obtained in relation to the data set provided.",
+      "3. As a school administrator, you want to find out whether results obtained by 10 students in two class tests are related.\n\nUsing Pearson's r and Table 2 below, calculate the relationship and write a brief report. (15 marks)",
+      "4. In a survey conducted in your area, students were asked about their gender and whether they consume alcohol.\n\nThe results are presented in Table 3 below.\n\n(a) Compute the Chi-square test statistic and make a decision at the 0.05 level of significance. (10 marks)\n\n(b) Briefly interpret your result in plain language. (5 marks)",
+      "5. A study was conducted to investigate whether sleep improves memory recall.\n\nTen participants were asked to memorize a list of words and recall them immediately after learning (pre-sleep) and again after a full night's sleep (post-sleep).\n\nConduct a related t-test to determine if sleep has a significant effect on memory recall. (15 marks)",
+      "6. The Department of Psychology wants to find out whether results obtained from PSY 123 were fair.\n\nThe results show:\n\nA = 3\nB = 7\nC = 20\nD = 20\nE = 23\nF = 37\n\nAs a research assistant in the department, using the Chi-square Goodness of Fit:\n\n(a) Determine how many students wrote the examination.\n\n(b) Determine whether the results were fair.\n\nShow all calculations. (15 marks)"
+    ]
+  }
+};
+
+const psy104SupportingData: QuestionSupportingData[] = [
+  {
+    questionNumber: 2,
+    kind: "practice_supporting_data",
+    title: "Raw Scores of Two Students' Preference of 10 Eateries in Owerri",
+    columns: ["Eateries Name", "Chioma (X)", "Ezinne (Y)"],
+    rows: [
+      ["A", "4", "3"],
+      ["B", "5", "4"],
+      ["C", "6", "5"],
+      ["D", "1", "2"],
+      ["E", "9", "10"],
+      ["F", "8", "7"],
+      ["G", "2", "1"],
+      ["H", "10", "9"],
+      ["I", "7", "8"],
+      ["J", "3", "6"]
+    ]
+  },
+  {
+    questionNumber: 3,
+    kind: "practice_supporting_data",
+    title: "Students' Results in Two Class Tests",
+    columns: ["Student Serial Number", "Test 1", "Test 2"],
+    rows: [
+      ["1", "8", "10"],
+      ["2", "12", "14"],
+      ["3", "15", "16"],
+      ["4", "18", "20"],
+      ["5", "10", "11"],
+      ["6", "14", "15"],
+      ["7", "16", "18"],
+      ["8", "20", "21"],
+      ["9", "11", "13"],
+      ["10", "17", "19"]
+    ]
+  },
+  {
+    questionNumber: 4,
+    kind: "practice_supporting_data",
+    title: "Gender and Alcohol Consumption",
+    columns: ["Gender", "Consume Alcohol", "Do Not Consume Alcohol", "Total"],
+    rows: [
+      ["Male", "18", "12", "30"],
+      ["Female", "10", "20", "30"],
+      ["Total", "28", "32", "60"]
+    ]
+  },
+  {
+    questionNumber: 5,
+    kind: "practice_supporting_data",
+    title: "Memory Recall Scores Before and After Sleep",
+    columns: ["Participant", "Pre-Sleep", "Post-Sleep"],
+    rows: [
+      ["1", "11", "16"],
+      ["2", "9", "14"],
+      ["3", "13", "18"],
+      ["4", "10", "15"],
+      ["5", "12", "17"],
+      ["6", "8", "12"],
+      ["7", "14", "19"],
+      ["8", "7", "12"],
+      ["9", "11", "14"],
+      ["10", "9", "16"]
+    ]
+  }
+];
+
+const psy104Question6SupportingDataReviewBackup: QuestionSupportingData = {
+  questionNumber: 6,
+  kind: "practice_supporting_data",
+  title: "Chi-square Goodness of Fit Expected Frequencies",
+  columns: ["Grade", "Observed Frequency", "Expected Frequency"],
+  rows: [
+    ["A", "3", "15"],
+    ["B", "7", "15"],
+    ["C", "20", "15"],
+    ["D", "20", "15"],
+    ["E", "23", "15"],
+    ["F", "37", "15"]
+  ]
+};
+
+const secondSemester200LevelTopicsByCourse: Record<string, string[]> = {
+  "PSY 202": [
+    "The Concept of Evolution",
+    "Theories of Evolution",
+    "Modern Theories of Evolution",
+    "Genetics Basics of Human Behaviour",
+    "Heredity and Mendel's Law of Heredity",
+    "Chromosomes, Genes and DNA",
+    "Genotype and Phenotype",
+    "Relative Contribution of Genetics/Nature",
+    "Environmental Factors (Nurture) in Human Behaviour",
+    "Application of Genetics to Human Behaviour",
+    "Sex Chromosomes and Genetic Abnormalities",
+    "Internal Environment and Homeostasis",
+    "Endocrine System"
+  ],
+  "PSY 204": [],
+  "PSY 206": [],
+  "PSY 208": [
+    "Introduction",
+    "Definition and Importance of Studying Positive Psychology",
+    "Goals of Positive Psychology",
+    "Origin of Positive Psychology",
+    "Theories of Positive Psychology",
+    "Key Concepts:\n• Well-being\n• Flow\n• Gratitude\n• Happiness",
+    "Positive Emotions",
+    "Positive Relationships",
+    "Self Presentation",
+    "Self-esteem and Personal Growth"
+  ],
+  "PSY 210": [
+    "Foundations of Consumer Psychology",
+    "Research Methods in Consumer Psychology",
+    "Learning, Memory and Information Processing in Consumer Behaviour",
+    "Sensation and Perception",
+    "Personality Traits and Individual Differences",
+    "Motivation, Needs and Consumer Drives",
+    "Consumer Decision Making"
+  ],
+  "PSY 212": [
+    "Introduction",
+    "Definition and Scope of Counselling Psychology",
+    "Benefits of Counselling",
+    "Historical Development of Counselling Psychology",
+    "Difference Between Counselling Psychology and Other Related Fields",
+    "Roles and Settings of Counselling Psychologists",
+    "Counselling Skills and Practice",
+    "Assessment in Counselling",
+    "Characteristics of a Good Counsellor",
+    "Self Care for Counsellors",
+    "Ethical Principles in Counselling"
+  ],
+  "PSY 214": [],
+  "GST 212": [
+    "Philosophy: Notions, Branches and Problems",
+    "Philosophy and the Quest for Knowledge",
+    "Logic: The Indispensable Tool of Philosophy",
+    "Arguments: Nature, Forms and Elements",
+    "Laws of Thought and Fallacies",
+    "Logic of Form and Logic of Content",
+    "Critical and Creative Thinking",
+    "Philosophy and Human Existence",
+    "Philosophy, Politics and Religion",
+    "Philosophy, Character and Human Values"
+  ],
+  "SSC 202": []
+};
+
+const psy204Question4ReviewBackup =
+  "4. (a) What is genetic?\n(b) Specify and explain at least two factors that could be responsible for human genetic variability.\n(c) Vividly distinguish positive feedback mechanism from negative feedback mechanism.";
+
+const psy204OriginalQuestion5ReviewBackup =
+  "5. (a) Identify the roles and goals of any three agents of socialization.\n(b) Based on the DSM-IV manual, present four factors that could lead to addiction at the workshop list.";
+
+const psy208PastQuestionsReviewBackup: NonNullable<ExamRecord["pastQuestions"]> = {
+  instruction: "Course Examination Questions",
+  items: [
+    "1. Explain the three (3) major classifications of adulthood with their associated developmental tasks.",
+    "2. What are the five (5) major biological changes associated with middle adulthood?",
+    "3. Peck (1955) expanded Erikson's concepts by suggesting that there are four psychological advances critical to successful adjustment in middle adulthood. Discuss.",
+    "4. Discuss three (3) theories of successful aging.",
+    "5. Explain four (4) research methods employed in the study of adult development.",
+    "6. Erikson's (1963) seventh life stage developmental crisis is Generativity versus stagnation. Discuss."
+  ]
+};
+
+const psy216PastQuestionsReviewBackup: NonNullable<ExamRecord["pastQuestions"]> = {
+  instruction: "Instruction: Answer any four questions.",
+  items: [
+    "1. The glands which constitute the endocrine system are of great interest to psychologists.\n(a) Vividly explain the endocrine system.\n(b) State any two glands of your choice and the essence of the hormone.",
+    "2.\n(a) Define homeostasis.\n(b) State at least three organs of the body that are involved in homeostasis.\n(c) Identify and explain at least two ways through which a particular organ is involved in homeostasis.",
+    "3.\n(a) What is genetics?\n(b) Specify and explain at least two factors that could be responsible for human genetic variability.\n(c) Vividly distinguish positive feedback mechanism from negative feedback mechanism.",
+    "4. According to the theory of evolution by Charles Darwin, natural selection depends on four specific processes. Identify and explain any three of these processes.",
+    "5.\n(a) Explain biological basis.\n(b) Explain structural relationship between:\n(i) Cells\n(ii) Deoxyribonucleic Acid (DNA)\n(iii) Chromosomes",
+    "6. Explain four psychological variables that influence consumer behaviour."
+  ]
+};
+
+const secondSemester200LevelPastQuestionsByCourse: Record<
+  string,
+  NonNullable<ExamRecord["pastQuestions"]>
+> = {
+  "PSY 204": {
+    instruction:
+      "Second Semester Examination 2024/2025 Academic Session\n\nInstruction: Answer any four (4) questions.",
+    items: [
+      "1. Social psychology is the study of social interaction. With 3 different examples, explain this to your friend, mother and rival.\n\nB) Define attitude according to Morgan et al. (1976).",
+      "2. With 3 good points differentiate social psychology from clinical psychology.\n\nB) State ten (10) relevance of social psychology.",
+      "3. In a tabular format list 7 theories of social psychology with the author(s) year and illustrate them briefly.",
+      "5. (a) Identify the roles and goals of any three agents of socialization.",
+      "6. Discuss the social influences in attitude formation.\n\nB) List any 8 agents of socialization.",
+      "7. In 200 words discuss the statement:\n\"Quitting smoking is a manifestation of attitude.\"",
+      "8. List 10 characteristics of attitude."
+    ]
+  },
+  "PSY 206": {
+    instruction:
+      "Second Semester Examination 2024/2025 Academic Session\n\nInstructions: Attempt any four (4) questions.",
+    items: [
+      "1. Explain the three (3) major classifications of adulthood with their associated developmental tasks.",
+      "2. Vividly explain five (5) major biological changes associated with middle adulthood.",
+      "3. Peck (1955) expanded Erikson's concepts by suggesting that there are four psychological advances critical to successful adjustment in middle adulthood. Discuss.",
+      "4. Discuss three (3) theories of successful aging.",
+      "5. Explain four (4) research methods employed in the study of adult development.",
+      "6. Erikson's (1963) seventh life stage developmental crisis is Generativity versus stagnation. Discuss."
+    ]
+  },
+  "PSY 210": {
+    instruction: "Instruction: Answer any four questions.",
+    items: [
+      "1. Define consumer behaviour and explain the domains of consumer behaviour with suitable examples.",
+      "2. Explain the four primary types of decisions that consumers make before purchase.",
+      "3. Discuss the applications of the three learning theories in consumer psychology.",
+      "4. List the seven keys of consumer behaviour and explain any four.",
+      "5. Discuss with examples four external factors that influence consumer behaviour.",
+      "6. Explain four psychological variables that influence consumer behaviour."
+    ]
+  },
+  "PSY 212": {
+    instruction: "Instruction: Answer question 1 and any other three questions.",
+    items: [
+      "1.\n(a) What do you understand by Counselling?\n(b) List and discuss any three (3) scope of Counselling Psychology.",
+      "2. With at least three (3) points, explain the benefits of Counselling to individuals.",
+      "3. Examine any three (3) skills a good Counsellor must apply in Counselling Practice.",
+      "4. In not more than one and half pages, critically evaluate any theory of Counselling Psychology of your interest.",
+      "5. List and explain at least five (5) characteristics of a good Counsellor.",
+      "6. In not more than one and half pages, trace the history of Counselling Psychology."
+    ]
+  }
+};
+
+const psy216RemovedCourseRecord: ExamRecord = {
+  slug: "psy-216",
+  courseCode: "PSY 216",
+  courseTitle: "Sensory Processes",
+  session: "2025/2026",
+  semester: "Second Semester",
+  level: "200 Level",
+  status: "current",
+  date: null,
+  time: null,
+  examVenue: null,
+  topicsToRead: [],
+  pastQuestions: null
+};
+
+// Non-rendered backups preserve questionable source content until ownership is verified.
+export const academicContentReviewBackups = {
+  removedCourseRecords: {
+    "PSY 216": {
+      reason:
+        "Confirmed as not offered during the 2025/2026 Second Semester academic period.",
+      courseRecord: psy216RemovedCourseRecord,
+      reviewOnlyPastQuestions: psy216PastQuestionsReviewBackup
+    }
+  },
+  removedFromActivePastQuestions: {
+    "PSY 204": {
+      reason:
+        "Question 4 appears unrelated to Social Psychology, and the original Question 5 contains an incomplete part (b). Question 5(a) remains active unchanged.",
+      questions: [
+        {
+          questionNumber: "4",
+          text: psy204Question4ReviewBackup
+        },
+        {
+          questionNumber: "5",
+          text: psy204OriginalQuestion5ReviewBackup
+        }
+      ]
+    },
+    "PSY 208": {
+      reason:
+        "The supplied questions focus on adulthood and aging and overlap with PSY 206. Ownership is awaiting verification.",
+      pastQuestions: psy208PastQuestionsReviewBackup
+    }
+  },
+  removedFromActiveSupportingData: {
+    "PSY 104": {
+      reason:
+        "Question 6 observed and expected frequency totals are inconsistent. No replacement values have been created.",
+      supportingData: [psy104Question6SupportingDataReviewBackup]
+    }
+  },
+  canonicalQuestionSources: {
+    "PSY 115": {
+      source: "pastQuestions.items",
+      answerRelationship: "answerReveals contains one answer-linked record per source question"
+    },
+    "PSY 123": {
+      source: "pastQuestions.items",
+      answerRelationship:
+        "answerReveals contains answer-linked subquestions grouped by the leading question number"
+    },
+    "PSY 117": {
+      source: "pastQuestions.items",
+      answerRelationship:
+        "answerReveals contains answer-linked subquestions grouped by the leading question number"
+    },
+    "BIO 101": {
+      source: "pastQuestions.items",
+      answerRelationship:
+        "answerReveals contains answer-linked subquestions grouped by the leading question number"
+    },
+    "SOC 101": {
+      source: "pastQuestions.items",
+      answerRelationship:
+        "answerReveals contains answer-linked questions and subquestions grouped by the leading question number"
+    },
+    "PSY 105": {
+      source: "pastQuestions.items",
+      answerRelationship:
+        "answerReveals contains answer-linked questions and subquestions grouped by the leading question number"
+    }
+  }
+} as const;
+
+const currentSecondSemesterRecords: ExamRecord[] = [
+  {
+    slug: "psy-116",
+    courseCode: "PSY 116",
+    courseTitle: "History and Systems of Psychology",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "100 Level",
+    status: "confirmed",
+    date: "2026-08-12",
+    time: "3 PM – 6 PM",
+    examVenue: "CSS Block",
+    topicsToRead: secondSemesterTopicsByCourse["PSY 116"],
+    pastQuestions: secondSemesterPastQuestionsByCourse["PSY 116"]
+  },
+  {
+    slug: "psy-122",
+    courseCode: "PSY 122",
+    courseTitle: "Determinants of Behaviour",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "100 Level",
+    status: "confirmed",
+    date: "2026-08-17",
+    time: "3 PM – 6 PM",
+    examVenue: "CSS Block",
+    topicsToRead: secondSemesterTopicsByCourse["PSY 122"],
+    pastQuestions: secondSemesterPastQuestionsByCourse["PSY 122"]
+  },
+  {
+    slug: "psy-104",
+    courseCode: "PSY 104",
+    courseTitle: "Quantitative Method in Psychology",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "100 Level",
+    status: "confirmed",
+    date: "2026-08-27",
+    time: "3 PM – 6 PM",
+    examVenue: "Eco Block",
+    topicsToRead: secondSemesterTopicsByCourse["PSY 104"],
+    pastQuestions: secondSemesterPastQuestionsByCourse["PSY 104"],
+    supportingData: psy104SupportingData
+  },
+  {
+    slug: "psy-102",
+    courseCode: "PSY 102",
+    courseTitle: "Police or Military Psychology",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "100 Level",
+    status: "confirmed",
+    date: "2026-09-01",
+    time: "12 Noon – 2 PM",
+    examVenue: "Eco Block, NF Rooms 24, 23, 22, 15, 7, SF Room 26",
+    topicsToRead: secondSemesterTopicsByCourse["PSY 102"],
+    pastQuestions: secondSemesterPastQuestionsByCourse["PSY 102"]
+  },
+  {
+    slug: "psy-118",
+    courseCode: "PSY 118",
+    courseTitle: "Political Psychology",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "100 Level",
+    status: "confirmed",
+    date: "2026-08-24",
+    time: "3 PM – 6 PM",
+    examVenue: "NF Rooms 22, 23 & 15",
+    note: "The course code mapping requires confirmation.",
+    topicsToRead: secondSemesterTopicsByCourse["PSY 118"],
+    pastQuestions: secondSemesterPastQuestionsByCourse["PSY 118"]
+  },
+  {
+    slug: "cds-102",
+    courseCode: "CSD 102",
+    courseTitle: "Career Development Services",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "100 Level",
+    status: "confirmed_schedule_code_pending",
+    date: "2026-09-14",
+    additionalExamDates: ["2026-09-15"],
+    time: "8 AM",
+    examVenue: null,
+    note: "Course materials use CDS 102. Official CBT timetable lists CSD 102.",
+    topicsToRead: secondSemesterTopicsByCourse["CSD 102"],
+    pastQuestions: null
+  },
+  {
+    slug: "gst-104",
+    courseCode: "HIS 104",
+    courseTitle: "History and Philosophy of Science",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "100 Level",
+    status: "confirmed_schedule_code_pending",
+    date: "2026-09-18",
+    additionalExamDates: ["2026-09-19"],
+    time: "8 AM",
+    examVenue: null,
+    note: "Course materials use GST 104. Official CBT timetable lists HIS 104.",
+    topicsToRead: secondSemesterTopicsByCourse["HIS 104"],
+    pastQuestions: null
+  },
+  {
+    slug: "els-112",
+    courseCode: "ELS 102",
+    courseTitle: "English Language Writing Skills",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "100 Level",
+    status: "confirmed_schedule_code_pending",
+    date: "2026-09-12",
+    time: "8 AM",
+    examVenue: null,
+    note: "Course materials use ELS 112. Official CBT timetable lists ELS 102.",
+    topicsToRead: secondSemesterTopicsByCourse["ELS 102"],
+    pastQuestions: null
+  },
+  {
+    slug: "sgb-118",
+    courseCode: "IGBO 107",
+    courseTitle: "Igbo",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "100 Level",
+    status: "confirmed_schedule_code_pending",
+    date: "2026-09-16",
+    additionalExamDates: ["2026-09-17"],
+    time: "8 AM",
+    examVenue: null,
+    note: "Course materials use SGB 118. Official CBT timetable lists IGBO 107.",
+    topicsToRead: secondSemesterTopicsByCourse["IGBO 107"],
+    pastQuestions: null
+  },
+  {
+    slug: "npc-112",
+    courseCode: "NPC 112",
+    courseTitle: "Nigerian People and Culture",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "100 Level",
+    status: "confirmed_schedule_code_pending",
+    date: "2026-09-10",
+    time: "8 AM",
+    examVenue: null,
+    note: "Course materials use GST 112. Official CBT timetable lists NPC 112.",
+    topicsToRead: secondSemesterTopicsByCourse["NPC 112"],
+    pastQuestions: null
+  },
+  {
+    slug: "ict-100",
+    courseCode: "ICT 102",
+    courseTitle: "Use of Computer Packages and Library",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "100 Level",
+    status: "confirmed_schedule_code_pending",
+    date: "2026-09-07",
+    additionalExamDates: ["2026-09-08"],
+    time: "8 AM",
+    examVenue: null,
+    note: "Course materials use ICT 100. Official CBT timetable lists ICT 102.",
+    topicsToRead: secondSemesterTopicsByCourse["ICT 102"],
+    pastQuestions: null
+  }
+];
+
+const currentSecondSemester200LevelRecords: ExamRecord[] = [
+  {
+    slug: "psy-204",
+    courseCode: "PSY 204",
+    courseTitle: "Introduction to Social Psychology",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "200 Level",
+    status: "confirmed",
+    date: "2026-08-10",
+    time: "3:00 PM - 6:00 PM",
+    examVenue: "NF Room 23",
+    topicsToRead: secondSemester200LevelTopicsByCourse["PSY 204"],
+    pastQuestions: secondSemester200LevelPastQuestionsByCourse["PSY 204"]
+  },
+  {
+    slug: "psy-206",
+    courseCode: "PSY 206",
+    courseTitle: "Developmental Psychology II (Adulthood and Aging)",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "200 Level",
+    status: "confirmed",
+    date: "2026-08-11",
+    time: "3:00 PM - 6:00 PM",
+    examVenue: "CSS Block",
+    topicsToRead: secondSemester200LevelTopicsByCourse["PSY 206"],
+    pastQuestions: secondSemester200LevelPastQuestionsByCourse["PSY 206"]
+  },
+  {
+    slug: "psy-208",
+    courseCode: "PSY 208",
+    courseTitle: "Positive Psychology",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "200 Level",
+    status: "confirmed",
+    date: "2026-08-13",
+    time: "3:00 PM - 6:00 PM",
+    examVenue: "CSS Block and NF Room 24",
+    topicsToRead: secondSemester200LevelTopicsByCourse["PSY 208"],
+    pastQuestions: null
+  },
+  {
+    slug: "psy-210",
+    courseCode: "PSY 210",
+    courseTitle: "Consumer Psychology",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "200 Level",
+    status: "confirmed",
+    date: "2026-08-18",
+    time: "8:00 AM - 11:00 AM",
+    examVenue: "NF Room 24 and CSS Block",
+    topicsToRead: secondSemester200LevelTopicsByCourse["PSY 210"],
+    pastQuestions: secondSemester200LevelPastQuestionsByCourse["PSY 210"]
+  },
+  {
+    slug: "psy-212",
+    courseCode: "PSY 212",
+    courseTitle: "Introduction to Counselling Psychology",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "200 Level",
+    status: "confirmed",
+    date: "2026-08-18",
+    time: "3:00 PM - 6:00 PM",
+    examVenue: "CSS Block and NF Room 24",
+    topicsToRead: secondSemester200LevelTopicsByCourse["PSY 212"],
+    pastQuestions: secondSemester200LevelPastQuestionsByCourse["PSY 212"]
+  },
+  {
+    slug: "psy-202",
+    courseCode: "PSY 202",
+    courseTitle: "Physiological Psychology",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "200 Level",
+    status: "confirmed",
+    date: "2026-08-24",
+    time: "8:00 AM - 11:00 AM",
+    examVenue: "SF Room 26",
+    topicsToRead: secondSemester200LevelTopicsByCourse["PSY 202"],
+    pastQuestions: null
+  },
+  {
+    slug: "psy-214",
+    courseCode: "PSY 214",
+    courseTitle: "Psychology of Crime and Delinquency",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "200 Level",
+    status: "confirmed",
+    date: "2026-08-25",
+    time: "3:00 PM - 6:00 PM",
+    examVenue: "NF Room 24 and CSS Block",
+    topicsToRead: secondSemester200LevelTopicsByCourse["PSY 214"],
+    pastQuestions: null
+  },
+  {
+    slug: "gst-212",
+    courseCode: "GST 212",
+    courseTitle: "Philosophy, Logic and Human Existence",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "200 Level",
+    status: "confirmed",
+    date: "2026-08-29",
+    time: "8:00 AM",
+    examVenue: null,
+    topicsToRead: secondSemester200LevelTopicsByCourse["GST 212"],
+    pastQuestions: null
+  },
+  {
+    slug: "ssc-202",
+    courseCode: "SSC 202",
+    courseTitle: "Introduction to Computer and its Application",
+    session: "2025/2026",
+    semester: "Second Semester",
+    level: "200 Level",
+    status: "current",
+    date: "2026-08-28",
+    time: "12 Noon – 2 PM",
+    examVenue: "NF Room 23",
+    topicsToRead: secondSemester200LevelTopicsByCourse["SSC 202"],
+    pastQuestions: null
+  }
+];
+
+export const examRecords: ExamRecord[] = [
+  ...archivedFirstSemesterRecords,
+  ...currentSecondSemesterRecords,
+  ...currentSecondSemester200LevelRecords
+];
+
 export function getAllExams() {
-  return [...examRecords].sort((a, b) => {
-    if (a.date !== b.date) return a.date.localeCompare(b.date);
-    return compareTime(a.time, b.time);
-  });
+  return sortExams(examRecords);
+}
+
+export function getExamsByLevel(key: LevelKey) {
+  const option = levelOptions.find((level) => level.key === key);
+
+  if (!option) return [];
+
+  return sortExams(
+    examRecords.filter(
+      (exam) =>
+        exam.session === "2025/2026" &&
+        exam.semester === "Second Semester" &&
+        exam.level === option.level
+    )
+  );
+}
+
+export function isLevelKey(value: string | undefined): value is LevelKey {
+  return levelOptions.some((level) => level.key === value);
+}
+
+export function getLevelKey(exam: Pick<ExamRecord, "level">): LevelKey {
+  return levelOptions.find((level) => level.level === exam.level)?.key ?? defaultLevelKey;
+}
+
+export function hasExamSchedule(exam: ExamRecord): exam is ScheduledExamRecord {
+  return Boolean(exam.date && exam.time);
 }
 
 export function isUpcomingExam(
-  exam: Pick<ExamRecord, "date" | "time">,
+  exam: Pick<ScheduledExamRecord, "date" | "time">,
   referenceDate = new Date()
 ) {
   return getExamDateTime(exam).getTime() >= referenceDate.getTime();
 }
 
 export function isCompletedExam(
-  exam: Pick<ExamRecord, "date" | "time">,
+  exam: Pick<ScheduledExamRecord, "date" | "time">,
   referenceDate = new Date()
 ) {
   return !isUpcomingExam(exam, referenceDate);
 }
 
 export function getUpcomingExams(referenceDate = new Date()) {
-  return getAllExams().filter((exam) => isUpcomingExam(exam, referenceDate));
+  return getAllExams()
+    .filter(hasExamSchedule)
+    .filter((exam) => isUpcomingExam(exam, referenceDate));
 }
 
 export function getNextExam(referenceDate = new Date()): ExamRecord | null {
@@ -1125,12 +2139,18 @@ export function getExamBySlug(slug: string) {
   return examRecords.find((exam) => exam.slug === slug) ?? null;
 }
 
-export function getExamsByDate(date: string) {
-  return getAllExams().filter((exam) => exam.date === date);
+export function getExamDates(exam: Pick<ExamRecord, "date" | "additionalExamDates">) {
+  return [...new Set([exam.date, ...(exam.additionalExamDates ?? [])].filter(Boolean))].sort() as string[];
+}
+
+export function getExamsByDate(date: string, levelKey: LevelKey) {
+  return getExamsByLevel(levelKey)
+    .filter(hasExamSchedule)
+    .filter((exam) => getExamDates(exam).includes(date));
 }
 
 export function getFinalExamDate() {
-  return getAllExams().at(-1)?.date ?? examRecords[0]?.date ?? "";
+  return getAllExams().flatMap(getExamDates).sort().at(-1) ?? "";
 }
 
 export function formatDateLabel(date: string) {
@@ -1164,7 +2184,7 @@ export function parseExamDate(date: string) {
   return new Date(year, month - 1, day);
 }
 
-export function getExamDateTime(exam: Pick<ExamRecord, "date" | "time">) {
+export function getExamDateTime(exam: Pick<ScheduledExamRecord, "date" | "time">) {
   const date = parseExamDate(exam.date);
   const startMinutes = toStartMinutes(exam.time);
 
@@ -1185,6 +2205,19 @@ function compareTime(left: string, right: string) {
   if (leftMinutes === null) return 1;
   if (rightMinutes === null) return -1;
   return leftMinutes - rightMinutes;
+}
+
+function sortExams(exams: ExamRecord[]) {
+  return [...exams].sort((a, b) => {
+    if (!a.date && !b.date) return a.courseCode.localeCompare(b.courseCode);
+    if (!a.date) return 1;
+    if (!b.date) return -1;
+    if (a.date !== b.date) return a.date.localeCompare(b.date);
+    if (!a.time && !b.time) return a.courseCode.localeCompare(b.courseCode);
+    if (!a.time) return 1;
+    if (!b.time) return -1;
+    return compareTime(a.time, b.time);
+  });
 }
 
 function toStartMinutes(time: string) {
