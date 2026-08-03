@@ -1,3 +1,5 @@
+import "server-only";
+
 import { ExamRecord, QuestionSupportingData, ScheduledExamRecord } from "@/lib/types/exams";
 
 const topicsByCourse: Record<string, string[]> = {

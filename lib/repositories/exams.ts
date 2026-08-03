@@ -1,3 +1,5 @@
+import "server-only";
+
 import { examRecords } from "@/lib/data/exams";
 import {
   CourseDetailDTO,
@@ -37,6 +39,13 @@ export async function listExamsByDate(date: string, level: LevelKey) {
 export async function getExamBySlug(slug: string): Promise<CourseDetailDTO | null> {
   const exam = examRecords.find((record) => record.slug === slug);
   return exam ? mapExamRecordToDetail(exam) : null;
+}
+
+export async function getExamScheduleBySlug(slug: string): Promise<CourseScheduleDTO | null> {
+  const exam = examRecords.find(
+    (record) => record.slug === slug && record.status !== "archived"
+  );
+  return exam ? mapExamRecordToSchedule(exam) : null;
 }
 
 export async function getUpcomingExam(

@@ -37,7 +37,13 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 Track upcoming papers and open each exam when you need it.
               </p>
             </div>
-            <div className="shrink-0 pt-0.5">
+            <div className="flex shrink-0 items-center gap-2 pt-0.5">
+              <Link
+                href="/account"
+                className="rounded-full px-2.5 py-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Account
+              </Link>
               <ThemeToggle />
             </div>
           </header>

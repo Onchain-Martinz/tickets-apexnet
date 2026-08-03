@@ -10,6 +10,7 @@ import {
   defaultLevelKey,
   isLevelKey
 } from "@/lib/domain/exams";
+import { requireViewer } from "@/lib/auth/session";
 import { listExamsByDate } from "@/lib/repositories/exams";
 import { formatDateLabel } from "@/lib/utils/dates";
 
@@ -25,16 +26,17 @@ type DatePageProps = {
 export default async function DateDetailPage({ params, searchParams }: DatePageProps) {
   const { date } = await params;
   const { level } = await searchParams;
-  const selectedLevelKey = isLevelKey(level) ? level : defaultLevelKey;
-  const exams = await listExamsByDate(date, selectedLevelKey);
+  const requestedLevelKey = isLevelKey(level) ? level : defaultLevelKey;
+  await requireViewer(`/date/${date}?level=${requestedLevelKey}`);
+  const exams = await listExamsByDate(date, requestedLevelKey);
 
   if (!exams.length) {
     notFound();
   }
 
-  const homeHref = (selectedLevelKey === defaultLevelKey
+  const homeHref = (requestedLevelKey === defaultLevelKey
     ? "/"
-    : `/?level=${selectedLevelKey}`) as Route;
+    : `/?level=${requestedLevelKey}`) as Route;
 
   return (
     <PageShell>
