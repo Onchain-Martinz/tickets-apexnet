@@ -6,11 +6,15 @@ import {
   SupportingDataDTO
 } from "@/lib/domain/exams";
 
-type AnsweredQuestion = {
+type QuestionDisplayItem = {
   id: string;
   number: string;
   text: string;
-  answer: AnswerDTO;
+  source: QuestionSetDTO["source"];
+  options: QuestionSetDTO["questions"][number]["options"];
+  answer: AnswerDTO | null;
+  answerStatus: "available" | "needs_review";
+  supportingData: SupportingDataDTO[];
 };
 
 export function PastQuestionsPanel({
@@ -18,34 +22,31 @@ export function PastQuestionsPanel({
 }: {
   questionSet: QuestionSetDTO | null;
 }) {
-  const answeredQuestions = questionSet?.questions.flatMap<AnsweredQuestion>((question) => {
+  const displayQuestions = questionSet?.questions.flatMap<QuestionDisplayItem>((question) => {
     if (question.subQuestions.length) {
-      return question.subQuestions.flatMap((subQuestion) =>
-        subQuestion.answer
-          ? [
-              {
-                id: subQuestion.id,
-                number: subQuestion.number,
-                text: subQuestion.text,
-                answer: subQuestion.answer
-              }
-            ]
-          : []
-      );
+      return question.subQuestions.map((subQuestion, index) => ({
+        id: subQuestion.id,
+        number: subQuestion.number,
+        text: subQuestion.text,
+        source: question.source,
+        options: [],
+        answer: subQuestion.answer,
+        answerStatus: subQuestion.answer ? "available" : "needs_review",
+        supportingData: index === 0 ? question.supportingData : []
+      }));
     }
 
-    return question.answer
-      ? [
-          {
-            id: question.id,
-            number: question.number,
-            text: question.text,
-            answer: question.answer
-          }
-        ]
-      : [];
+    return [{
+      id: question.id,
+      number: question.number,
+      text: question.text,
+      source: question.source,
+      options: question.options,
+      answer: question.answer,
+      answerStatus: question.answerStatus,
+      supportingData: question.supportingData
+    }];
   }) ?? [];
-  const hasAnswerReveals = answeredQuestions.length > 0;
 
   if (!questionSet) {
     return (
@@ -61,6 +62,17 @@ export function PastQuestionsPanel({
 
   return (
     <div className="space-y-3 sm:space-y-4">
+      <header className="space-y-1.5 px-1">
+        <h2 className="text-lg font-semibold tracking-[-0.025em] text-foreground sm:text-xl">
+          {questionSet.title}
+        </h2>
+        {questionSet.notice ? (
+          <p className="max-w-3xl text-[13px] leading-5 text-muted-foreground sm:text-sm sm:leading-6">
+            {questionSet.notice}
+          </p>
+        ) : null}
+      </header>
+
       {questionSet.instruction ? (
         <Card>
           <CardHeader className="pb-3">
@@ -75,28 +87,13 @@ export function PastQuestionsPanel({
       ) : null}
 
       <div className="space-y-2.5 sm:space-y-3">
-        {hasAnswerReveals
-          ? answeredQuestions.map((item) => (
-              <QuestionRevealCard key={item.id} item={item} />
-            ))
-          : questionSet.questions.map((question) => {
-              return (
-                <Card key={question.id}>
-                  <CardContent className="p-4 sm:p-5">
-                    <pre className="max-w-3xl whitespace-pre-wrap break-words font-sans text-sm leading-6 text-foreground">
-                      {question.text}
-                    </pre>
-
-                    {question.supportingData.map((table) => (
-                      <PracticeSupportingTable
-                        key={table.id}
-                        table={table}
-                      />
-                    ))}
-                  </CardContent>
-                </Card>
-              );
-            })}
+        {displayQuestions.map((item) => (
+          <QuestionRevealCard key={item.id} item={item}>
+            {item.supportingData.map((table) => (
+              <PracticeSupportingTable key={table.id} table={table} />
+            ))}
+          </QuestionRevealCard>
+        ))}
       </div>
     </div>
   );

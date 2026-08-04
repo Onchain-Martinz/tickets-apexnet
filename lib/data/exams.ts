@@ -1,5 +1,7 @@
 import "server-only";
 
+import { completedPastQuestionAnswersByCourse } from "@/lib/data/completed-past-answers";
+import { generatedPracticeQuestionsByCourse } from "@/lib/data/generated-practice";
 import { ExamRecord, QuestionSupportingData, ScheduledExamRecord } from "@/lib/types/exams";
 
 const topicsByCourse: Record<string, string[]> = {
@@ -2076,7 +2078,37 @@ export const examRecords: ExamRecord[] = [
   ...archivedFirstSemesterRecords,
   ...currentSecondSemesterRecords,
   ...currentSecondSemester200LevelRecords
-];
+].map((exam) => {
+  const generatedPracticeQuestions = generatedPracticeQuestionsByCourse[exam.courseCode];
+  const completedAnswers = completedPastQuestionAnswersByCourse[exam.courseCode];
+  const answerReveals = exam.answerReveals ?? (
+    completedAnswers ? createAnswerReveals(exam, completedAnswers) : undefined
+  );
+
+  return {
+    ...exam,
+    ...(generatedPracticeQuestions ? { generatedPracticeQuestions } : {}),
+    ...(answerReveals ? { answerReveals } : {})
+  };
+});
+
+function createAnswerReveals(
+  exam: ExamRecord,
+  answers: readonly string[]
+): NonNullable<ExamRecord["answerReveals"]> {
+  const questions = exam.pastQuestions?.items ?? [];
+
+  if (questions.length !== answers.length) {
+    throw new Error(`Answer count does not match question count for ${exam.courseCode}.`);
+  }
+
+  return questions.map((question, index) => ({
+    questionNumber:
+      question.match(/^\s*(?:Question\s*)?(\d+)/i)?.[1] ?? index + 1,
+    question,
+    answer: answers[index]
+  }));
+}
 
 export function getAllExams() {
   return sortExams(examRecords);

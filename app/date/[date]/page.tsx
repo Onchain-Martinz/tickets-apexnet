@@ -60,7 +60,10 @@ export default async function DateDetailPage({ params, searchParams }: DatePageP
 
         <PageReveal delay={0.08}>
           <Card>
-            <CardContent className="grid gap-2.5 p-3.5 sm:p-4">
+            <CardContent className="grid gap-3 p-3.5 sm:p-4">
+              <p className="px-1 text-[12px] leading-5 text-muted-foreground sm:text-[13px]">
+                ✨ Tap any course card to explore past questions and study materials
+              </p>
               <div className="grid gap-2.5">
                 {exams.map((exam) => (
                   <ExamListItem key={exam.slug} exam={exam} />

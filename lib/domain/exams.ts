@@ -55,6 +55,13 @@ export type AnswerDTO = {
   text: string;
 };
 
+export type QuestionSource = "past_question" | "generated_practice";
+
+export type QuestionOptionDTO = {
+  key: "A" | "B" | "C" | "D";
+  text: string;
+};
+
 export type SupportingDataDTO = {
   id: string;
   questionId: string;
@@ -77,6 +84,9 @@ export type QuestionDTO = {
   number: string;
   text: string;
   sourceText: string;
+  source: QuestionSource;
+  options: QuestionOptionDTO[];
+  answerStatus: "available" | "needs_review";
   subQuestions: SubQuestionDTO[];
   answer: AnswerDTO | null;
   supportingData: SupportingDataDTO[];
@@ -84,7 +94,10 @@ export type QuestionDTO = {
 
 export type QuestionSetDTO = {
   id: string;
+  title: "Past Questions" | "AI Practice Questions";
+  source: QuestionSource;
   instruction: string;
+  notice: string | null;
   questions: QuestionDTO[];
 };
 
@@ -109,6 +122,7 @@ export type CourseDetailDTO = CourseScheduleDTO & {
   status: CourseOfferingStatus;
   note: string | null;
   questionSet: QuestionSetDTO | null;
+  generatedPracticeQuestionSet: QuestionSetDTO | null;
   outline: OutlineDTO;
 };
 

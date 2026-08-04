@@ -3,6 +3,23 @@ export type QuestionSet = {
   items: string[];
 };
 
+export type QuestionOptionKey = "A" | "B" | "C" | "D";
+
+export type GeneratedPracticeQuestion = {
+  number: number;
+  question: string;
+  options: Record<QuestionOptionKey, string>;
+  answer: QuestionOptionKey;
+  source: "generated_practice";
+};
+
+export type GeneratedPracticeQuestionSet = {
+  providedCourseCode: string;
+  sourceNote: string;
+  notice: string;
+  questions: GeneratedPracticeQuestion[];
+};
+
 export type QuestionSupportingData = {
   questionNumber: number;
   kind: "practice_supporting_data";
@@ -43,6 +60,7 @@ export type ExamRecord = {
   examVenue: string | null;
   note?: string;
   pastQuestions: QuestionSet | null;
+  generatedPracticeQuestions?: GeneratedPracticeQuestionSet;
   supportingData?: QuestionSupportingData[];
   topicsToRead: string[];
   answerReveals?: AnswerReveal[];

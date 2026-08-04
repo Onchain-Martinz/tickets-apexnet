@@ -15,6 +15,7 @@ import { BackLink } from "@/components/layout/back-link";
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getVisitorOverview } from "@/lib/analytics/visitor-overview";
 import { requireAdmin } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -47,7 +48,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const safeQuery = q.trim().replace(/[,().%]/g, "");
   if (safeQuery) usersQuery = usersQuery.or(`full_name.ilike.%${safeQuery}%,email.ilike.%${safeQuery}%`);
 
-  const [usersResult, cohortsResult, entitlementsResult, allocationsResult, plansResult, paymentsResult, repsResult, commissionsResult, overviewResult] =
+  const [usersResult, cohortsResult, entitlementsResult, allocationsResult, plansResult, paymentsResult, repsResult, commissionsResult, overviewResult, visitorOverview] =
     await Promise.all([
       usersQuery,
       admin.from("cohorts").select("id, level, academic_session, semester").eq("status", "active"),
@@ -57,7 +58,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       admin.from("payments").select("id, user_id, premium_plan_id, merchant_reference, amount_minor, currency, status, initiated_at, verified_at").order("created_at", { ascending: false }).limit(50),
       admin.from("course_rep_assignments").select("id, user_id, cohort_id, commission_bps, status, assigned_at").order("created_at", { ascending: false }),
       admin.from("commissions").select("id, course_rep_assignment_id, payment_id, sale_amount_minor, commission_amount_minor, status, created_at").order("created_at", { ascending: false }),
-      admin.rpc("get_admin_overview", { p_actor_user_id: viewer.user.id })
+      admin.rpc("get_admin_overview", { p_actor_user_id: viewer.user.id }),
+      getVisitorOverview()
     ]);
 
   const users = usersResult.data ?? [];
@@ -111,6 +113,37 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             <Card key={String(label)}><CardContent className="p-4"><p className="text-xs text-muted-foreground">{label}</p><p className="mt-1 text-xl font-semibold">{value}</p></CardContent></Card>
           ))}
         </div>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Anonymous Visitors</CardTitle>
+            <p className="text-xs leading-5 text-muted-foreground">
+              Account conversion based on visitors recorded by Google Analytics.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              {[
+                ["Visitors without accounts", visitorOverview?.anonymousVisitors ?? "—"],
+                ["Registered users", visitorOverview?.registeredVisitors ?? "—"],
+                [
+                  "Conversion",
+                  visitorOverview ? `${visitorOverview.conversionPercentage.toFixed(1)}%` : "—"
+                ]
+              ].map(([label, value]) => (
+                <div key={String(label)} className="rounded-[1rem] border border-border bg-muted/35 p-4">
+                  <p className="text-xs text-muted-foreground">{label}</p>
+                  <p className="mt-1 text-xl font-semibold text-foreground">{value}</p>
+                </div>
+              ))}
+            </div>
+            {!visitorOverview ? (
+              <p className="mt-3 text-xs leading-5 text-muted-foreground">
+                Visitor analytics is not configured or is temporarily unavailable.
+              </p>
+            ) : null}
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader><CardTitle>User management</CardTitle></CardHeader>

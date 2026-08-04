@@ -10,7 +10,7 @@ import {
   SubQuestionDTO,
   SupportingDataDTO
 } from "@/lib/domain/exams";
-import { ExamRecord } from "@/lib/types/exams";
+import { ExamRecord, GeneratedPracticeQuestionSet } from "@/lib/types/exams";
 import { compareSittings, parseTimeRange } from "@/lib/utils/dates";
 
 const aliasesByOfficialCode: Record<string, CourseAliasDTO[]> = {
@@ -48,7 +48,8 @@ export function mapExamRecordToDetail(exam: ExamRecord): CourseDetailDTO {
     ...mapExamRecordToSchedule(exam),
     status: exam.status,
     note: exam.note ?? null,
-    questionSet: mapQuestionSet(exam),
+    questionSet: mapPastQuestionSet(exam),
+    generatedPracticeQuestionSet: mapGeneratedPracticeQuestionSet(exam),
     outline: mapOutline(exam)
   };
 }
@@ -71,7 +72,7 @@ function mapSittings(exam: ExamRecord): ExamSittingDTO[] {
     .sort(compareSittings);
 }
 
-function mapQuestionSet(exam: ExamRecord): QuestionSetDTO | null {
+function mapPastQuestionSet(exam: ExamRecord): QuestionSetDTO | null {
   const sourceItems = exam.pastQuestions?.items ?? [];
   const answerReveals = exam.answerReveals ?? [];
 
@@ -112,14 +113,54 @@ function mapQuestionSet(exam: ExamRecord): QuestionSetDTO | null {
     } else {
       question.text = reveal.question;
       question.answer = answer;
+      question.answerStatus = "available";
     }
   }
 
   return {
     id: `${exam.slug}-question-set`,
+    title: "Past Questions",
+    source: "past_question",
     instruction: exam.pastQuestions?.instruction ?? "",
+    notice: null,
     questions
   };
+}
+
+function mapGeneratedPracticeQuestionSet(exam: ExamRecord): QuestionSetDTO | null {
+  const set = exam.generatedPracticeQuestions;
+  if (!set?.questions.length) return null;
+
+  return {
+    id: `${exam.slug}-generated-practice-question-set`,
+    title: "AI Practice Questions",
+    source: "generated_practice",
+    instruction: "Choose the best answer from options A-D.",
+    notice: set.notice,
+    questions: set.questions.map((question) => ({
+      id: `${exam.slug}-generated-practice-question-${question.number}`,
+      number: String(question.number),
+      text: question.question,
+      sourceText: question.question,
+      source: question.source,
+      options: mapGeneratedOptions(question.options),
+      answerStatus: "available",
+      subQuestions: [],
+      answer: mapAnswer(
+        `${exam.slug}-generated-practice`,
+        String(question.number),
+        question.answer
+      ),
+      supportingData: []
+    }))
+  };
+}
+
+function mapGeneratedOptions(options: GeneratedPracticeQuestionSet["questions"][number]["options"]) {
+  return (["A", "B", "C", "D"] as const).map((key) => ({
+    key,
+    text: options[key]
+  }));
 }
 
 function createQuestion(
@@ -135,6 +176,9 @@ function createQuestion(
     number,
     text,
     sourceText: text,
+    source: "past_question",
+    options: [],
+    answerStatus: "needs_review",
     subQuestions: [],
     answer: null,
     supportingData:

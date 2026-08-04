@@ -10,6 +10,12 @@ import { CourseDetailDTO } from "@/lib/domain/exams";
 
 export function ExamContentTabs({ exam }: { exam: CourseDetailDTO }) {
   const [tab, setTab] = useState("past-questions");
+  const questionSet = exam.questionSet ?? exam.generatedPracticeQuestionSet;
+  const questionTabLabel = exam.questionSet
+    ? "Past Questions"
+    : exam.generatedPracticeQuestionSet
+      ? "AI Practice Questions"
+      : "Past Questions";
 
   return (
     <Tabs value={tab} onValueChange={setTab} className="w-full space-y-0">
@@ -21,12 +27,7 @@ export function ExamContentTabs({ exam }: { exam: CourseDetailDTO }) {
           value="past-questions"
           className="min-w-0 px-2 text-[11px] leading-4 whitespace-normal text-center sm:px-3 sm:text-[13px] sm:leading-none sm:whitespace-nowrap"
         >
-          <span className="sm:hidden">
-            Past
-            <br />
-            Questions
-          </span>
-          <span className="hidden sm:inline">Past Questions</span>
+          <span>{questionTabLabel}</span>
         </TabsTrigger>
         <TabsTrigger
           value="topics-to-read"
@@ -51,7 +52,7 @@ export function ExamContentTabs({ exam }: { exam: CourseDetailDTO }) {
           className="mt-4 sm:mt-5"
         >
           {tab === "past-questions" ? (
-            <PastQuestionsPanel questionSet={exam.questionSet} />
+            <PastQuestionsPanel questionSet={questionSet} />
           ) : (
             <TopicsPanel outline={exam.outline} />
           )}

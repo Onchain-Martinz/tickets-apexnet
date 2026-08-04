@@ -29,7 +29,7 @@ export const funnelCopy = {
     button: "Continue preparing"
   },
   paywall: {
-    title: (name: string) => `Hey ${name}, Martinz here again 👋`,
+    title: (name: string) => `Hey ${name}, ready for your next exam? 🚀`,
     button: (price: string) => `Unlock all courses — ${price}`
   },
   trialReminder: {
@@ -83,11 +83,10 @@ export function founderMessage(name: string, price: string) {
 
 export function paywallMessage(price: string) {
   return [
-    "Looks like you have completed your two free exam preparations.",
-    "I hope you enjoyed using the platform and that it helped you organize your study process.",
-    `You can now unlock access to all available courses across the platform. With one payment of ${price}, you get full access to the available exam preparation content.`,
+    "You have completed your free exam preparation sessions.",
+    "You can now unlock access to available courses, past questions, study materials, and practice resources.",
     "No subscription. No recurring payments.",
-    "Just prepare, learn, and focus on passing your exams."
+    `One payment of ${price} unlocks all available exam preparation content.`
   ];
 }
 

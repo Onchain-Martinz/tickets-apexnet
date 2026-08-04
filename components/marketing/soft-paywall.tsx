@@ -21,6 +21,8 @@ export function SoftPaywall({
   error,
   onCheckout
 }: SoftPaywallProps) {
+  const message = price ? paywallMessage(price) : null;
+
   return (
     <div className="space-y-5">
       <section className="rounded-[1.5rem] border border-border/60 bg-card px-4 py-5 shadow-calm sm:px-6 sm:py-6">
@@ -33,10 +35,29 @@ export function SoftPaywall({
         </p>
       </section>
 
-      <FounderMessageCard title={funnelCopy.paywall.title(name)}>
-        <div className="space-y-4 text-sm leading-6 text-muted-foreground sm:text-[15px] sm:leading-7">
-          {price ? (
-            paywallMessage(price).map((paragraph) => <p key={paragraph}>{paragraph}</p>)
+      <FounderMessageCard
+        eyebrow="Full exam access"
+        title={funnelCopy.paywall.title(name)}
+        showAvatar={false}
+      >
+        <div className="space-y-5 text-sm leading-6 text-muted-foreground sm:text-[15px] sm:leading-7">
+          {message && price ? (
+            <>
+              <div className="space-y-2">
+                <p className="font-medium text-foreground">{message[0]}</p>
+                <p>{message[1]}</p>
+              </div>
+              <div className="border-y border-border/70 py-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  One-time payment
+                </p>
+                <p className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-foreground">
+                  {price}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">{message[2]}</p>
+              </div>
+              <p>{message[3]}</p>
+            </>
           ) : (
             <p>Premium checkout is not currently available for this level.</p>
           )}
