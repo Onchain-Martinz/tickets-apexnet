@@ -54,6 +54,17 @@ describe("Kora webhook enforcement policy", () => {
     }).configured).toBe(false);
   });
 
+  it("allows test mode in production when ENABLE_TEST_PAYMENT_MODE is enabled", () => {
+    expect(getKoraConfigurationStatus({
+      NODE_ENV: "production",
+      NEXT_PUBLIC_APP_URL: "https://exam.example.com",
+      KORA_SECRET_KEY: "server-secret-placeholder",
+      KORA_ENVIRONMENT: "test",
+      KORA_WEBHOOK_REQUIRED: "true",
+      ENABLE_TEST_PAYMENT_MODE: "true"
+    }).configured).toBe(true);
+  });
+
   it("defaults to requiring webhooks", () => {
     expect(getKoraConfigurationStatus({
       NODE_ENV: "production",

@@ -90,8 +90,9 @@ export function getKoraConfigurationStatus(
   }
 
   const secretKeyPresent = Boolean(environment.KORA_SECRET_KEY);
+  const testModeAllowed = environment.ENABLE_TEST_PAYMENT_MODE?.trim().toLowerCase() === "true";
   const environmentValid = production
-    ? mode === "live"
+    ? mode === "live" || (mode === "test" && testModeAllowed)
     : mode === "test" || mode === "live";
   const webhookPolicyValid = !production || webhookRequired;
 
