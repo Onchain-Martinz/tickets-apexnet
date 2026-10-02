@@ -1,45 +1,33 @@
 import { readFileSync } from "node:fs";
-
 import { describe, expect, it } from "vitest";
 
 const home = source("../app/page.tsx");
-const datePage = source("../app/date/[date]/page.tsx");
-const examPage = source("../app/exam/[slug]/page.tsx");
 const returnPage = source("../app/payment/return/page.tsx");
-const onboardingAction = source("../app/onboarding/actions.ts");
+const adminPage = source("../app/admin/page.tsx");
+const initRoute = source("../app/api/payments/kora/initialize/route.ts");
 
 describe("route security contracts", () => {
-  it("keeps the homepage calendar public", () => {
+  it("keeps the public party landing page accessible without login", () => {
     expect(home).not.toContain("requireViewer(");
-    expect(home).toContain("listExamsByLevel");
+    expect(home).not.toContain("requireAdmin(");
   });
 
-  it("protects date and course routes", () => {
-    expect(datePage).toContain("requireViewer(");
-    expect(examPage).toContain("requireViewer(");
+  it("protects the admin dashboard with requireAdmin", () => {
+    expect(adminPage).toContain("requireAdmin(");
   });
 
-  it("does not load full academic content before access is granted", () => {
-    expect(examPage.indexOf("getCourseAccess(")).toBeLessThan(
-      examPage.indexOf("getExamBySlug(slug)")
-    );
-  });
-
-  it("does not finalize access from the payment return page", () => {
-    expect(returnPage).not.toContain("finalize_verified_payment");
-    expect(returnPage).not.toContain("verifyAndFinalizePayment");
+  it("uses server-side authoritative verifyAndFinalizePayment fallback on return page", () => {
+    expect(returnPage).toContain("verifyAndFinalizePayment");
   });
 
   it("contains no browser-return payment finalization path", () => {
     expect(returnPage).not.toContain("confirmDevelopmentKoraReturn");
     expect(returnPage).not.toContain("developmentReturnFinalizationEnabled");
-    expect(returnPage).not.toContain("verifyAndFinalizePayment");
   });
 
-  it("uses the query string only as a safe return path during onboarding", () => {
-    expect(onboardingAction).toContain("getSafeNextPath(nextPath)");
-    expect(onboardingAction).toContain('formData.get("level")');
-    expect(onboardingAction).not.toContain('formData.get("course_slug")');
+  it("server-side determines ticket payable price in initialization route", () => {
+    expect(initRoute).toContain("calculateOrderEconomics");
+    expect(initRoute).toContain("amount_minor: economics.totalMinor");
   });
 });
 

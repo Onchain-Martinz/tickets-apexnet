@@ -127,8 +127,19 @@
   animation: liquid-navigation-fill 1.25s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-.liquid-navigation-loader__shimmer {
-  animation: liquid-navigation-shimmer 1.25s ease-in-out infinite;
+@keyframes page-reveal-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-reveal {
+  animation: page-reveal-fade-up 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -137,7 +148,8 @@
   }
 
   .liquid-navigation-loader__fill,
-  .liquid-navigation-loader__shimmer {
+  .liquid-navigation-loader__shimmer,
+  .page-reveal {
     animation: none;
   }
 

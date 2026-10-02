@@ -4,6 +4,18 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getSupabasePublicConfig } from "@/lib/supabase/config";
 
 export async function updateSession(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  
+  // Skip session claims refresh for public landing page, APIs, payment return, and static pages
+  if (
+    pathname === "/" ||
+    pathname.startsWith("/api/") ||
+    pathname.startsWith("/payment") ||
+    pathname.startsWith("/admin")
+  ) {
+    return NextResponse.next({ request });
+  }
+
   const config = getSupabasePublicConfig();
   if (!config) return NextResponse.next({ request });
 

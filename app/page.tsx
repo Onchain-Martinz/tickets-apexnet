@@ -1,90 +1,114 @@
-import Link from "next/link";
-import type { Route } from "next";
+import Image from "next/image";
+import { Sparkles, Calendar, MapPin, ArrowDown, Ticket } from "lucide-react";
 
-import { HomeDashboard } from "@/components/exams/home-dashboard";
+import { CheckoutCard } from "@/components/tickets/checkout-card";
 import { PageShell } from "@/components/layout/page-shell";
 import { PageReveal } from "@/components/layout/page-reveal";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
-import {
-  defaultLevelKey,
-  isLevelKey,
-  levelOptions
-} from "@/lib/domain/exams";
-import { listExamsByLevel } from "@/lib/repositories/exams";
+import { WhatsAppSupportLink } from "@/components/support/whatsapp-support-link";
+import { EVENT_CONFIG, CUSTOMER_TOTAL_DISPLAY } from "@/lib/config/event";
 
-type HomePageProps = {
-  searchParams: Promise<{
-    level?: string;
-  }>;
-};
-
-export default async function HomePage({ searchParams }: HomePageProps) {
-  const { level } = await searchParams;
-  const selectedLevelKey = isLevelKey(level) ? level : defaultLevelKey;
-  const selectedLevel = levelOptions.find((option) => option.key === selectedLevelKey)!;
-  const exams = await listExamsByLevel(selectedLevelKey);
-
+export default function HomePage() {
   return (
-    <PageShell>
-      <div className="space-y-4 sm:space-y-5 lg:space-y-6">
+    <PageShell className="max-w-xl mx-auto px-4 sm:px-6">
+      <div className="space-y-8 sm:space-y-10">
+        {/* NAV / BRAND */}
         <PageReveal>
-          <header className="flex items-start justify-between gap-3 px-1 py-0.5 sm:px-0">
-            <div className="min-w-0 flex-1 space-y-1">
-              <h1 className="text-[1.4rem] font-semibold tracking-[-0.035em] text-foreground sm:text-[1.55rem]">
-                Exam Study Plan
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Track upcoming papers and open each exam when you need it.
-              </p>
+          <header className="flex items-center justify-between py-2">
+            <div className="flex items-center gap-2">
+              <span className="flex size-8 items-center justify-center rounded-xl bg-violet-600/20 border border-violet-500/30 text-violet-400">
+                <Ticket className="size-4" />
+              </span>
+              <span className="font-bold tracking-tight text-white text-sm sm:text-base">
+                Course Reps Party
+              </span>
             </div>
-            <div className="flex shrink-0 items-center gap-2 pt-0.5">
-              <Link
-                href="/account"
-                className="rounded-full px-2.5 py-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Account
-              </Link>
-              <ThemeToggle />
-            </div>
+            <a
+              href="#get-ticket"
+              className="rounded-full bg-white/10 hover:bg-white/15 px-3.5 py-1.5 text-xs font-semibold text-white transition-colors"
+            >
+              Get Ticket
+            </a>
           </header>
         </PageReveal>
 
+        {/* HERO SECTION WITH BACKGROUND IMAGE */}
         <PageReveal delay={0.03}>
-          <nav
-            aria-label="Level selection"
-            className="grid grid-cols-2 gap-1 rounded-[1rem] border border-border bg-secondary p-1 sm:inline-grid"
-          >
-            {levelOptions.map((option) => {
-              const active = option.key === selectedLevelKey;
-              const href = (option.key === defaultLevelKey
-                ? "/"
-                : `/?level=${option.key}`) as Route;
+          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl">
+            {/* Background Image Container */}
+            <div className="absolute inset-0 z-0">
+              <Image
+                src="/images/party-hero.jpg"
+                alt="Course Representatives' Party Night celebration"
+                fill
+                priority
+                className="object-cover object-center scale-[1.02]"
+                sizes="(max-width: 640px) 100vw, 576px"
+              />
+              {/* Dark & Gradient Overlay for readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/85 to-zinc-950/60" />
+            </div>
 
-              return (
-                <Link
-                  key={option.key}
-                  href={href}
-                  aria-current={active ? "page" : undefined}
-                  className={[
-                    "inline-flex min-h-10 items-center justify-center rounded-[0.8rem] px-3 py-2 text-center text-[12px] font-medium transition-colors sm:text-[13px]",
-                    active
-                      ? "bg-card text-foreground shadow-card"
-                      : "text-muted-foreground hover:text-foreground"
-                  ].join(" ")}
+            {/* Hero Copy & CTA over image */}
+            <div className="relative z-10 text-center space-y-4 px-6 py-10 sm:px-8 sm:py-14">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-violet-500/40 bg-violet-500/20 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-violet-300">
+                <Sparkles className="size-3.5 text-violet-300" />
+                <span>Official Event Portal</span>
+              </div>
+
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.15]">
+                {EVENT_CONFIG.name}
+              </h1>
+
+              <p className="text-sm sm:text-base text-zinc-300 max-w-md mx-auto leading-relaxed">
+                {EVENT_CONFIG.tagline}
+              </p>
+
+              <div className="pt-2">
+                <a
+                  href="#get-ticket"
+                  className="inline-flex h-13 items-center justify-center gap-2 rounded-2xl bg-violet-600 hover:bg-violet-500 px-8 text-base font-bold text-white shadow-xl shadow-violet-600/35 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  {option.label}
-                </Link>
-              );
-            })}
-          </nav>
+                  <span>Get Your Ticket — {CUSTOMER_TOTAL_DISPLAY}</span>
+                  <ArrowDown className="size-4" />
+                </a>
+              </div>
+            </div>
+          </div>
         </PageReveal>
 
-        <PageReveal delay={0.05}>
-          <HomeDashboard
-            exams={exams}
-            levelKey={selectedLevelKey}
-            calendarTitle={`${selectedLevel.label} EXAM CALENDAR`}
-          />
+        {/* SMALL EVENT INFO SECTION */}
+        <PageReveal delay={0.06}>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-2xl border border-white/10 bg-zinc-950/60 p-4 backdrop-blur-sm">
+              <div className="flex items-center gap-2 text-violet-400 mb-1">
+                <Calendar className="size-4" />
+                <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Date</span>
+              </div>
+              <p className="text-sm sm:text-base font-bold text-white">TBA</p>
+              <p className="text-[11px] text-zinc-400">To be announced</p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-zinc-950/60 p-4 backdrop-blur-sm">
+              <div className="flex items-center gap-2 text-violet-400 mb-1">
+                <MapPin className="size-4" />
+                <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Location</span>
+              </div>
+              <p className="text-sm sm:text-base font-bold text-white">TBA</p>
+              <p className="text-[11px] text-zinc-400">To be announced</p>
+            </div>
+          </div>
+        </PageReveal>
+
+        {/* CHECKOUT SECTION */}
+        <PageReveal delay={0.09}>
+          <CheckoutCard />
+        </PageReveal>
+
+        {/* SUPPORT / HELP SECTION */}
+        <PageReveal delay={0.12}>
+          <div className="flex justify-center pt-2 pb-6">
+            <WhatsAppSupportLink label="Need help? Chat on WhatsApp" />
+          </div>
         </PageReveal>
       </div>
     </PageShell>

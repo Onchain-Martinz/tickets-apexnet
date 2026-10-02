@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const WHATSAPP_SUPPORT_URL =
-  "https://wa.me/2349133848512?text=Hi%20Martinz,%20I%20need%20help%20with%20my%20exam%20prep%20account";
+  "https://wa.me/2349133848512?text=Hi%20Martinz,%20I%20need%20help%20with%20my%20party%20ticket";
 
 type WhatsAppSupportLinkProps = {
   className?: string;
@@ -13,7 +13,7 @@ type WhatsAppSupportLinkProps = {
 
 export function WhatsAppSupportLink({
   className,
-  label = "Chat with Martinz"
+  label = "Chat on WhatsApp"
 }: WhatsAppSupportLinkProps) {
   return (
     <Button

@@ -124,7 +124,7 @@ export function createKoraMerchantReference(
 ) {
   const compactEntropy = entropy.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8);
   if (!compactEntropy) throw new Error("Kora reference entropy is missing.");
-  return `IMSU-${timestamp}-${compactEntropy}`;
+  return `PARTY-${timestamp}-${compactEntropy}`;
 }
 
 export function getKoraErrorDiagnostic(error: unknown): KoraErrorDiagnostic {
@@ -160,6 +160,7 @@ export async function initializeKoraCheckout(input: {
   customerEmail: string;
   redirectUrl: string;
   webhookUrl?: string;
+  narration?: string;
 }) {
   const response = await fetch(`${KORA_API_URL}/charges/initialize`, {
     method: "POST",
@@ -171,7 +172,7 @@ export async function initializeKoraCheckout(input: {
       amount: minorToKoraAmount(input.amountMinor),
       currency: input.currency,
       reference: input.merchantReference,
-      narration: "IMSU Exam Prep Premium Platform Access",
+      narration: input.narration ?? "Party Ticket Purchase",
       redirect_url: input.redirectUrl,
       ...(input.webhookUrl ? { notification_url: input.webhookUrl } : {}),
       customer: {
@@ -179,7 +180,7 @@ export async function initializeKoraCheckout(input: {
         email: input.customerEmail
       },
       metadata: {
-        product: "premium-access"
+        product: "party-ticket"
       }
     }),
     cache: "no-store"

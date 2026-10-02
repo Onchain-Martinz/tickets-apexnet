@@ -38,13 +38,13 @@ describe("Kora checkout initialization", () => {
       "12345678-1234-1234-1234-123456789012"
     );
 
-    expect(reference).toBe("IMSU-1785720000000-12345678");
+    expect(reference).toBe("PARTY-1785720000000-12345678");
     expect(reference.length).toBeLessThanOrEqual(30);
   });
 
   it("converts the database minor-unit prices in one place", () => {
+    expect(minorToKoraAmount(750000)).toBe(7500);
     expect(minorToKoraAmount(10000)).toBe(100);
-    expect(minorToKoraAmount(150000)).toBe(1500);
   });
 
   it("omits a localhost webhook but enables the deployed HTTPS endpoint", () => {
@@ -61,7 +61,7 @@ describe("Kora checkout initialization", () => {
         JSON.stringify({
           status: true,
           message: "Charge created successfully",
-          data: { reference: "IMSU-1-12345678", checkout_url: "https://checkout.korapay.com/pay" }
+          data: { reference: "PARTY-1-12345678", checkout_url: "https://checkout.korapay.com/pay" }
         }),
         { status: 200, headers: { "Content-Type": "application/json" } }
       )
@@ -69,17 +69,17 @@ describe("Kora checkout initialization", () => {
     vi.stubGlobal("fetch", request);
 
     const checkout = await initializeKoraCheckout({
-      merchantReference: "IMSU-1-12345678",
-      amountMinor: 10000,
+      merchantReference: "PARTY-1-12345678",
+      amountMinor: 750000,
       currency: "NGN",
-      customerName: "Student",
-      customerEmail: "student@example.com",
+      customerName: "Alex",
+      customerEmail: "party-1-12345678@guest.tickets",
       redirectUrl: "http://localhost:3000/payment/return"
     });
     const body = JSON.parse(request.mock.calls[0][1].body as string);
 
     expect(checkout.checkoutUrl).toBe("https://checkout.korapay.com/pay");
-    expect(body.amount).toBe(100);
+    expect(body.amount).toBe(7500);
     expect(body).not.toHaveProperty("notification_url");
   });
 
@@ -104,10 +104,10 @@ describe("Kora checkout initialization", () => {
     try {
       await initializeKoraCheckout({
         merchantReference: "invalid-value",
-        amountMinor: 10000,
+        amountMinor: 750000,
         currency: "NGN",
-        customerName: "Student",
-        customerEmail: "student@example.com",
+        customerName: "Alex",
+        customerEmail: "party-1@guest.tickets",
         redirectUrl: "http://localhost:3000/payment/return"
       });
     } catch (error) {
