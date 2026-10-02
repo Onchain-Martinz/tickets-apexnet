@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const support = readFileSync(
-  new URL("../components/support/whatsapp-support-link.tsx", import.meta.url),
+const footerSource = readFileSync(
+  new URL("../components/layout/site-footer.tsx", import.meta.url),
   "utf8"
 );
 
@@ -10,17 +10,17 @@ function source(path: string) {
   return readFileSync(new URL(path, import.meta.url), "utf8");
 }
 
-describe("WhatsApp customer support", () => {
-  it("uses the approved Nigerian WhatsApp destination and safe external-link attributes", () => {
-    expect(support).toContain("https://wa.me/2349133848512");
-    expect(support).toContain('target="_blank"');
-    expect(support).toContain('rel="noopener noreferrer"');
-  });
-
+describe("Customer support and branding cleanup", () => {
   it.each([
     "../app/page.tsx",
     "../app/payment/return/page.tsx"
-  ])("renders the reusable support link in %s", (path) => {
-    expect(source(path)).toContain("<WhatsAppSupportLink");
+  ])("does not render customer-facing WhatsApp support links in %s", (path) => {
+    expect(source(path)).not.toContain("<WhatsAppSupportLink");
+  });
+
+  it("displays prominent POWERED BY APEXNET footer branding", () => {
+    expect(footerSource).toContain("POWERED BY");
+    expect(footerSource).toContain("APEXNET");
+    expect(footerSource).not.toContain("Created by Martinz");
   });
 });

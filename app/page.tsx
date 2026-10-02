@@ -4,7 +4,6 @@ import { Sparkles, Calendar, MapPin, ArrowDown, Ticket } from "lucide-react";
 import { CheckoutCard } from "@/components/tickets/checkout-card";
 import { PageShell } from "@/components/layout/page-shell";
 import { PageReveal } from "@/components/layout/page-reveal";
-import { WhatsAppSupportLink } from "@/components/support/whatsapp-support-link";
 import { EVENT_CONFIG, CUSTOMER_TOTAL_DISPLAY } from "@/lib/config/event";
 
 export default function HomePage() {
@@ -102,13 +101,6 @@ export default function HomePage() {
         {/* CHECKOUT SECTION */}
         <PageReveal delay={0.09}>
           <CheckoutCard />
-        </PageReveal>
-
-        {/* SUPPORT / HELP SECTION */}
-        <PageReveal delay={0.12}>
-          <div className="flex justify-center pt-2 pb-6">
-            <WhatsAppSupportLink label="Need help? Chat on WhatsApp" />
-          </div>
         </PageReveal>
       </div>
     </PageShell>

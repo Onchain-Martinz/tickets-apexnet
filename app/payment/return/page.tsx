@@ -3,7 +3,6 @@ import { Loader2, XCircle, ArrowLeft, RefreshCw } from "lucide-react";
 
 import { PaymentStatusRefresh } from "@/components/payments/payment-status-refresh";
 import { TicketPassCard } from "@/components/tickets/ticket-pass-card";
-import { WhatsAppSupportLink } from "@/components/support/whatsapp-support-link";
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -128,7 +127,6 @@ export default async function PaymentReturnPage({ searchParams }: PaymentReturnP
                   Try Again
                 </Link>
               </Button>
-              <WhatsAppSupportLink />
             </CardContent>
           </Card>
         ) : (
@@ -146,7 +144,6 @@ export default async function PaymentReturnPage({ searchParams }: PaymentReturnP
               <div className="rounded-xl bg-white/5 border border-white/5 p-3 font-mono text-xs text-zinc-400 break-all">
                 Ref: {reference}
               </div>
-              <WhatsAppSupportLink />
             </CardContent>
           </Card>
         )}
