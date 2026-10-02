@@ -6,12 +6,9 @@ export const themeInitializationScript = `
 (() => {
   try {
     const root = document.documentElement;
-    const storedTheme = localStorage.getItem("${THEME_STORAGE_KEY}");
-    const theme = storedTheme === "light" ? "light" : "dark";
-
-    root.classList.toggle("dark", theme === "dark");
-    root.dataset.theme = theme;
-    root.style.colorScheme = theme;
+    root.classList.add("dark");
+    root.dataset.theme = "dark";
+    root.style.colorScheme = "dark";
   } catch (error) {}
 })();
 `;

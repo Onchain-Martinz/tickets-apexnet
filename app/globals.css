@@ -4,35 +4,37 @@
 
 @layer base {
   :root {
-    --background: 247 247 245;
-    --foreground: 17 17 17;
-    --card: 255 255 255;
-    --card-foreground: 17 17 17;
-    --primary: 77 107 254;
-    --primary-foreground: 255 255 255;
-    --secondary: 240 240 237;
-    --secondary-foreground: 17 17 17;
-    --muted: 240 240 237;
-    --muted-foreground: 110 106 99;
-    --accent: 77 107 254;
-    --accent-foreground: 255 255 255;
-    --border: 231 229 224;
-    --input: 231 229 224;
-    --ring: 77 107 254;
-    --timer-background: 240 240 237;
-    --timer-foreground: 26 26 26;
-    --accent-hover: 63 90 224;
-    --exam-day: 220 230 255;
-    --exam-day-hover: 207 219 255;
-    --exam-day-border: 207 219 255;
-    --exam-day-foreground: 47 77 160;
-    --page-glow: transparent;
-    --selection: 77 107 254;
-    --shadow-card: 0 1px 2px rgba(17, 17, 17, 0.04);
-    --shadow-calm: 0 10px 20px -18px rgba(17, 17, 17, 0.08);
+    color-scheme: dark;
+    --background: 11 11 16;
+    --foreground: 245 247 255;
+    --card: 18 19 26;
+    --card-foreground: 245 247 255;
+    --primary: 139 92 246;
+    --primary-foreground: 245 247 255;
+    --secondary: 23 25 35;
+    --secondary-foreground: 245 247 255;
+    --muted: 23 25 35;
+    --muted-foreground: 158 164 199;
+    --accent: 139 92 246;
+    --accent-foreground: 245 247 255;
+    --border: 38 41 58;
+    --input: 38 41 58;
+    --ring: 139 92 246;
+    --timer-background: 21 23 35;
+    --timer-foreground: 247 243 255;
+    --accent-hover: 159 107 255;
+    --exam-day: 27 22 48;
+    --exam-day-hover: 33 27 57;
+    --exam-day-border: 124 92 250;
+    --exam-day-foreground: 233 221 255;
+    --page-glow: rgba(139, 92, 246, 0.16);
+    --selection: 139 92 246;
+    --shadow-card: 0 0 0 1px rgba(139, 92, 246, 0.05), 0 16px 34px rgba(4, 6, 17, 0.48);
+    --shadow-calm: 0 0 0 1px rgba(139, 92, 246, 0.08), 0 28px 72px rgba(4, 6, 17, 0.58);
   }
 
   .dark {
+    color-scheme: dark;
     --background: 11 11 16;
     --foreground: 245 247 255;
     --card: 18 19 26;

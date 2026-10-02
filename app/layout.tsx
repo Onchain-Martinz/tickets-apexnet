@@ -20,11 +20,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" style={{ colorScheme: "dark" }} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitializationScript }} />
       </head>
-      <body>
+      <body className="bg-[#09090b] text-foreground antialiased selection:bg-violet-500/20">
         <ThemeProvider>
           <Suspense fallback={null}>
             <NavigationLoadingIndicator />

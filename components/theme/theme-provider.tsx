@@ -22,96 +22,39 @@ type ThemeContextValue = {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-function getInitialTheme(): Theme {
-  if (typeof document === "undefined") {
-    return "light";
-  }
-
-  const rootTheme = document.documentElement.dataset.theme;
-  return rootTheme === "dark" || rootTheme === "light" ? rootTheme : "light";
-}
-
-function getPreferredTheme() {
-  const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
-
-  if (storedTheme === "dark" || storedTheme === "light") {
-    return storedTheme;
-  }
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
-
-function applyTheme(theme: Theme, withTransition = false) {
+function applyDarkTheme() {
+  if (typeof document === "undefined") return;
   const root = document.documentElement;
-
-  if (withTransition) {
-    root.classList.add("theme-switching");
-    window.setTimeout(() => {
-      root.classList.remove("theme-switching");
-    }, 220);
-  }
-
-  root.classList.toggle("dark", theme === "dark");
-  root.dataset.theme = theme;
-  root.style.colorScheme = theme;
+  root.classList.add("dark");
+  root.dataset.theme = "dark";
+  root.style.colorScheme = "dark";
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(getInitialTheme);
+  const [theme] = useState<Theme>("dark");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleChange = (event: MediaQueryListEvent) => {
-      if (window.localStorage.getItem(THEME_STORAGE_KEY)) {
-        return;
-      }
-
-      const systemTheme = event.matches ? "dark" : "light";
-      applyTheme(systemTheme);
-      startTransition(() => {
-        setThemeState(systemTheme);
-      });
-    };
-
-    const frameId = window.requestAnimationFrame(() => {
-      setMounted(true);
-      setThemeState(getPreferredTheme());
-    });
-
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => {
-      window.cancelAnimationFrame(frameId);
-      mediaQuery.removeEventListener("change", handleChange);
-    };
+    applyDarkTheme();
+    setMounted(true);
   }, []);
 
-  useEffect(() => {
-    applyTheme(theme);
-  }, [theme]);
-
-  const setTheme = useCallback((nextTheme: Theme) => {
-    window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
-    applyTheme(nextTheme, true);
-
-    startTransition(() => {
-      setThemeState(nextTheme);
-    });
+  const setTheme = useCallback(() => {
+    applyDarkTheme();
   }, []);
 
   const toggleTheme = useCallback(() => {
-    setTheme(theme === "light" ? "dark" : "light");
-  }, [setTheme, theme]);
+    applyDarkTheme();
+  }, []);
 
   const value = useMemo(
     () => ({
-      theme,
+      theme: "dark" as Theme,
       mounted,
       setTheme,
       toggleTheme
     }),
-    [mounted, setTheme, theme, toggleTheme]
+    [mounted, setTheme, toggleTheme]
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
