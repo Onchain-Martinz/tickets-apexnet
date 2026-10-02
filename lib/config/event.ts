@@ -10,7 +10,7 @@ export const PRODUCTION_CONFIG_PRESET = {
   organizerProceedsDisplay: "₦7,100"
 } as const;
 
-// Current Active Configuration: Strict ₦200 Test Payment Mode
+// Current Active Configuration: Production Live Pricing
 export const EVENT_CONFIG = {
   name: "Course Representatives' Party Night",
   tagline: "Date and location to be announced.",
@@ -19,19 +19,19 @@ export const EVENT_CONFIG = {
   venue: "TBA",
   description:
     "An unforgettable night of music, celebration, good energy, and memories with friends.",
-  ticketPriceMinor: 15000, // ₦150 Test Ticket
-  processingFeeMinor: 5000, // ₦50 Test Processing Fee
-  customerTotalMinor: 20000, // ₦200 Total Charged
-  organizerProceedsMinor: 14700,
+  ticketPriceMinor: 700000, // ₦7,000 Ticket
+  processingFeeMinor: 50000, // ₦500 Processing Fee
+  customerTotalMinor: 750000, // ₦7,500 Total Charged
+  organizerProceedsMinor: 710000, // ₦7,100 Organizer Proceeds
   currency: "NGN",
-  referencePrefix: "PARTY-TEST",
-  isTestMode: true
+  referencePrefix: "PARTY",
+  isTestMode: false
 } as const;
 
-export const TICKET_PRICE_DISPLAY = "₦150";
-export const PROCESSING_FEE_DISPLAY = "₦50";
-export const CUSTOMER_TOTAL_DISPLAY = "₦200";
-export const ORGANIZER_PROCEEDS_PER_TICKET_DISPLAY = "₦147";
+export const TICKET_PRICE_DISPLAY = "₦7,000";
+export const PROCESSING_FEE_DISPLAY = "₦500";
+export const CUSTOMER_TOTAL_DISPLAY = "₦7,500";
+export const ORGANIZER_PROCEEDS_PER_TICKET_DISPLAY = "₦7,100";
 
 export function calculateOrderEconomics(quantity: number) {
   const safeQty = Math.max(1, Math.min(10, Math.floor(quantity) || 1));

@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
+import { EVENT_CONFIG } from "@/lib/config/event";
 
 export type PaymentRecord = {
   id: string;
@@ -103,7 +104,8 @@ export class LocalSupabaseAdminClient {
       let ticketNumber = payment.ticket_number;
       if (!ticketNumber) {
         const base = `TKT-${payment.id.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8).toUpperCase()}`;
-        const qty = Math.max(1, Math.round(Number(payment.amount_minor || 20000) / 20000));
+        const unitPrice = EVENT_CONFIG.customerTotalMinor;
+        const qty = Math.max(1, Math.round(Number(payment.amount_minor || unitPrice) / unitPrice));
         if (qty > 1) {
           ticketNumber = Array.from({ length: qty }, (_, i) => `${base}-${i + 1}`).join(", ");
         } else {

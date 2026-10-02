@@ -33,21 +33,23 @@ describe("Party Ticketing Contract & Test Economics", () => {
     );
   });
 
-  it("strictly enforces active ₦200 test mode and preserves production preset", () => {
-    // Active Test Mode values
-    expect(EVENT_CONFIG.isTestMode).toBe(true);
+  it("strictly enforces active ₦7,500 live production pricing", () => {
+    // Active Live Production values
+    expect(EVENT_CONFIG.isTestMode).toBe(false);
     expect(EVENT_CONFIG.name).toBe("Course Representatives' Party Night");
-    expect(EVENT_CONFIG.ticketPriceMinor).toBe(15000);
-    expect(EVENT_CONFIG.processingFeeMinor).toBe(5000);
-    expect(EVENT_CONFIG.customerTotalMinor).toBe(20000);
-    expect(TICKET_PRICE_DISPLAY).toBe("₦150");
-    expect(PROCESSING_FEE_DISPLAY).toBe("₦50");
-    expect(CUSTOMER_TOTAL_DISPLAY).toBe("₦200");
+    expect(EVENT_CONFIG.ticketPriceMinor).toBe(700000);
+    expect(EVENT_CONFIG.processingFeeMinor).toBe(50000);
+    expect(EVENT_CONFIG.customerTotalMinor).toBe(750000);
+    expect(EVENT_CONFIG.organizerProceedsMinor).toBe(710000);
+    expect(TICKET_PRICE_DISPLAY).toBe("₦7,000");
+    expect(PROCESSING_FEE_DISPLAY).toBe("₦500");
+    expect(CUSTOMER_TOTAL_DISPLAY).toBe("₦7,500");
+    expect(ORGANIZER_PROCEEDS_PER_TICKET_DISPLAY).toBe("₦7,100");
     expect(EVENT_CONFIG.date).toBe("TBA");
     expect(EVENT_CONFIG.time).toBe("TBA");
     expect(EVENT_CONFIG.venue).toBe("TBA");
 
-    // Preserved Production Preset values for future switch
+    // Preserved Production Preset values
     expect(PRODUCTION_CONFIG_PRESET.ticketPriceMinor).toBe(700000);
     expect(PRODUCTION_CONFIG_PRESET.processingFeeMinor).toBe(50000);
     expect(PRODUCTION_CONFIG_PRESET.customerTotalMinor).toBe(750000);

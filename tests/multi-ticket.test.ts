@@ -19,29 +19,37 @@ describe("Multiple Tickets & Order Economics", () => {
   it("calculates correct economics for single ticket", () => {
     const eco = calculateOrderEconomics(1);
     expect(eco.quantity).toBe(1);
-    expect(eco.ticketSubtotalMinor).toBe(15000);
-    expect(eco.processingFeeMinor).toBe(5000);
-    expect(eco.totalMinor).toBe(20000);
-    expect(eco.organizerProceedsMinor).toBe(14700);
-    expect(eco.totalDisplay).toBe("₦200");
+    expect(eco.ticketSubtotalMinor).toBe(700000);
+    expect(eco.processingFeeMinor).toBe(50000);
+    expect(eco.totalMinor).toBe(750000);
+    expect(eco.organizerProceedsMinor).toBe(710000);
+    expect(eco.totalDisplay).toBe("₦7,500");
   });
 
   it("calculates correct economics for multiple tickets", () => {
     const eco2 = calculateOrderEconomics(2);
     expect(eco2.quantity).toBe(2);
-    expect(eco2.ticketSubtotalMinor).toBe(30000);
-    expect(eco2.processingFeeMinor).toBe(10000);
-    expect(eco2.totalMinor).toBe(40000);
-    expect(eco2.organizerProceedsMinor).toBe(29400);
-    expect(eco2.totalDisplay).toBe("₦400");
+    expect(eco2.ticketSubtotalMinor).toBe(1400000);
+    expect(eco2.processingFeeMinor).toBe(100000);
+    expect(eco2.totalMinor).toBe(1500000);
+    expect(eco2.organizerProceedsMinor).toBe(1420000);
+    expect(eco2.totalDisplay).toBe("₦15,000");
+
+    const eco3 = calculateOrderEconomics(3);
+    expect(eco3.quantity).toBe(3);
+    expect(eco3.ticketSubtotalMinor).toBe(2100000);
+    expect(eco3.processingFeeMinor).toBe(150000);
+    expect(eco3.totalMinor).toBe(2250000);
+    expect(eco3.organizerProceedsMinor).toBe(2130000);
+    expect(eco3.totalDisplay).toBe("₦22,500");
 
     const eco5 = calculateOrderEconomics(5);
     expect(eco5.quantity).toBe(5);
-    expect(eco5.ticketSubtotalMinor).toBe(75000);
-    expect(eco5.processingFeeMinor).toBe(25000);
-    expect(eco5.totalMinor).toBe(100000);
-    expect(eco5.organizerProceedsMinor).toBe(73500);
-    expect(eco5.totalDisplay).toBe("₦1,000");
+    expect(eco5.ticketSubtotalMinor).toBe(3500000);
+    expect(eco5.processingFeeMinor).toBe(250000);
+    expect(eco5.totalMinor).toBe(3750000);
+    expect(eco5.organizerProceedsMinor).toBe(3550000);
+    expect(eco5.totalDisplay).toBe("₦37,500");
   });
 
   it("enforces boundary limits on quantity (1 to 10)", () => {
@@ -74,8 +82,8 @@ describe("Multiple Tickets & Order Economics", () => {
     const insertRes = await client.from("payments").insert({
       buyer_name: "Martinz Multi",
       buyer_department: "Psychology",
-      merchant_reference: "PARTY-TEST-MULTI-3",
-      amount_minor: 60000,
+      merchant_reference: "PARTY-LIVE-MULTI-3",
+      amount_minor: 2250000,
       currency: "NGN",
       status: "pending"
     }).single();

@@ -75,18 +75,18 @@ export function CheckoutCard() {
       />
 
       <div className="relative z-10 space-y-6">
-        {/* Test Mode Notification Header */}
-        <div className="space-y-2">
+        {/* Ticket Header */}
+        <div className="space-y-1">
           <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-400">
-              🧪 TEST PAYMENT
+            <span className="text-lg sm:text-xl font-bold text-white tracking-tight">
+              Party Ticket Checkout
             </span>
             <span className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
               {economics.totalDisplay}
             </span>
           </div>
           <p className="text-xs leading-relaxed text-zinc-400">
-            This is an isolated test transaction for verifying the ticketing flow.
+            Official entry pass for Course Representatives&apos; Party Night.
           </p>
         </div>
 
@@ -128,7 +128,7 @@ export function CheckoutCard() {
           <div className="flex items-center justify-between text-zinc-400">
             <span className="flex items-center gap-2">
               <Ticket className="size-4 text-violet-400 shrink-0" />
-              Test Ticket{quantity > 1 ? ` (×${quantity})` : ""}
+              Ticket{quantity > 1 ? ` (×${quantity})` : ""}
             </span>
             <span className="font-medium text-zinc-200">{economics.ticketSubtotalDisplay}</span>
           </div>
@@ -136,7 +136,7 @@ export function CheckoutCard() {
           <div className="flex items-center justify-between text-zinc-400">
             <span className="flex items-center gap-2">
               <CreditCard className="size-4 text-zinc-400 shrink-0" />
-              Test Processing Fee
+              Payment Processing Fee
             </span>
             <span className="font-medium text-zinc-200">{economics.processingFeeDisplay}</span>
           </div>
